@@ -7,7 +7,15 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import styles from "./styles/app.css";
+import directStyle from "./styles/style.css";
 
+export function links() {
+  return [
+    { rel: "stylesheet", href: styles },
+    { rel: "stylesheet", href: directStyle },
+  ];
+}
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
   title: "New Remix App",

@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  email      String     @unique
+  password   String
+  birthday   String
+  birthCity  String
+  role       Int        @default(1)
+  statut     Int        @default(1)
+  //mission relation many to many a faire plusieur user on la meme mission et vice verca
+  missionIDs String[]   @db.ObjectId
+  missions   Missions[] @relation(fields: [missionIDs], references: [id])
+  //contract relation one to many a faire user a plusieur contrat
+  workedTime Int        @default(0)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model Missions {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  missionName String
+  userIDs     String[] @db.ObjectId
+  users       User[]   @relation(fields: [userIDs], references: [id])
+  beginAt     DateTime
+  endAt       DateTime
+  place       String
+}
