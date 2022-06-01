@@ -29,7 +29,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="max-w-7xl mx-auto">
         <Outlet />
         <ScrollRestoration />
         <Scripts />

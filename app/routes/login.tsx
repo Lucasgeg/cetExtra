@@ -1,7 +1,16 @@
-import { ActionFunction, json } from "@remix-run/node";
+import {
+  ActionFunction,
+  json,
+  LoaderFunction,
+  redirect,
+} from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import { useState } from "react";
-import { register } from "~/utils/auth.server";
+import { getUser, login, register } from "~/utils/auth.server";
+
+export const loader: LoaderFunction = async ({ request }) => {
+  return (await getUser(request)) ? redirect("/") : null;
+};
 
 type Data = {
   email: string;
@@ -9,6 +18,8 @@ type Data = {
   validatePassword: string;
   birthday: string;
   birthCity: string;
+  firstName: string;
+  lastName: string;
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -17,33 +28,58 @@ export const action: ActionFunction = async ({ request }) => {
   const email = form.get("email");
   const password = form.get("password");
   const validatePassword = form.get("validatePassword");
+  const firstName = form.get("firstName");
+  const lastName = form.get("lastName");
   const birthday = form.get("birthday");
   const birthCity = form.get("birthCity");
   const action = form.get("_action");
 
-  if (
-    typeof email !== "string" ||
-    typeof password !== "string" ||
-    typeof validatePassword !== "string" ||
-    typeof birthCity !== "string" ||
-    typeof birthday !== "string"
-  ) {
-    throw new Error();
+  switch (action) {
+    case "register":
+      if (
+        typeof email !== "string" ||
+        typeof password !== "string" ||
+        typeof validatePassword !== "string" ||
+        typeof birthCity !== "string" ||
+        typeof birthday !== "string" ||
+        typeof firstName !== "string" ||
+        typeof lastName !== "string"
+      ) {
+        throw new Error("typeError");
+      }
+      const data = {
+        email,
+        password,
+        validatePassword,
+        birthday,
+        birthCity,
+        firstName,
+        lastName,
+      };
+      return await register({
+        ...data,
+      });
+    case "connect": {
+      if (typeof email !== "string" || typeof password !== "string") {
+        throw new Error("typeError");
+      }
+
+      const data = { email, password };
+      return await login({ ...data });
+    }
+    default: {
+      return json({ error: "actionerror" });
+    }
   }
-  const data = { email, password, validatePassword, birthday, birthCity };
-  return await register({
-    ...data,
-  });
 };
 
 export default function Login() {
   const actionData = useActionData();
-  /////////////////typage a faire, formdata/////////////////
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     field: string
   ) => {
-    setFormData((form: Data) => ({ ...form, [field]: event.target.value }));
+    setFormData((form) => ({ ...form, [field]: event.target.value }));
   };
   const [formData, setFormData] = useState({
     email: "",
@@ -51,6 +87,8 @@ export default function Login() {
     validatePassword: "",
     birthday: "",
     birthCity: "",
+    firstName: "",
+    lastName: "",
   });
   const [action, setAction] = useState("connect");
   return (
@@ -67,7 +105,7 @@ export default function Login() {
           <label htmlFor="email">Email</label>
           <br />
           <input
-            className=""
+            className="w-44"
             type="text"
             name="email"
             value={formData.email}
@@ -77,6 +115,7 @@ export default function Login() {
           <label htmlFor="password">Password</label>
           <br />
           <input
+            className="w-44"
             type="password"
             name="password"
             value={formData.password}
@@ -88,15 +127,37 @@ export default function Login() {
               <label htmlFor="validatePassword">Password Validation</label>
               <br />
               <input
+                className="w-44"
                 type="password"
                 name="validatePassword"
                 value={formData.validatePassword}
                 onChange={(e) => handleInputChange(e, "validatePassword")}
               />{" "}
               <br />
-              <label htmlFor="birthday">Birthday</label>
+              <label htmlFor="firstName">Prénom</label>
               <br />
               <input
+                className="w-44"
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={(e) => handleInputChange(e, "firstName")}
+              />
+              <br />
+              <label htmlFor="lastName">Nom</label>
+              <br />
+              <input
+                className="w-44"
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={(e) => handleInputChange(e, "lastName")}
+              />
+              <br />
+              <label htmlFor="birthday">Date de naissance</label>
+              <br />
+              <input
+                className="w-44"
                 required={true}
                 type="date"
                 name="birthday"
@@ -107,6 +168,7 @@ export default function Login() {
               <label htmlFor="birthCity">Birth City</label>
               <br />
               <input
+                className="w-44"
                 required={true}
                 type="text"
                 name="birthCity"
@@ -118,7 +180,7 @@ export default function Login() {
           ) : null}
           <button
             type="submit"
-            name="_Action"
+            name="_action"
             value={action == "connect" ? "connect" : "register"}
           >
             Submit

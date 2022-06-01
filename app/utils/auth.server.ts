@@ -1,7 +1,7 @@
 import { createCookieSessionStorage, json, redirect } from "@remix-run/node";
 import { prisma } from "./prisma.server";
 import { createUser } from "./users.server";
-const { isEmail } = require("validator");
+import bcrypt from "bcryptjs";
 const token = process.env.TOKEN_SECRET;
 if (!token) {
   throw new Error("TOKEN_SECRET must be set");
@@ -11,7 +11,7 @@ if (!token) {
 
 const storage = createCookieSessionStorage({
   cookie: {
-    name: "Auth_Process_Id=valid",
+    name: "Auth_Session",
     secure: process.env.NODE_ENV == "production",
     secrets: [token],
     sameSite: "lax",
@@ -38,12 +38,60 @@ export type RegisterForm = {
   validatePassword: string;
   birthday: string;
   birthCity: string;
+  firstName: string;
+  lastName: string;
 };
 export type LoginForm = {
   email: string;
   password: string;
 };
 ///////////////////////////////////////////FUNCTIONS//////////////////////////////////////////////////
+function getUserSession(request: Request) {
+  return storage.getSession(request.headers.get("cookie"));
+}
+export async function getUserId(request: Request) {
+  const session = await getUserSession(request);
+
+  const userId = session.get("userId");
+
+  if (!userId || typeof userId !== "string") return null;
+  return userId;
+}
+export async function getUser(request: Request) {
+  const userId = await getUserId(request);
+
+  if (typeof userId !== "string") return null;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        birthCity: true,
+        birthday: true,
+        firstName: true,
+        lastName: true,
+        missionIDs: true,
+        missions: true,
+        role: true,
+        statut: true,
+        workedTime: true,
+      },
+    });
+    return user;
+  } catch {
+    throw logout(request);
+  }
+}
+export async function logout(request: Request) {
+  const session = await getUserSession(request);
+  return redirect("/login", {
+    headers: {
+      "Set-Cookie": await storage.destroySession(session),
+    },
+  });
+}
+
 export const register = async (form: RegisterForm) => {
   const email = form.email.toString().toLowerCase().trim();
   const password = form.password.toString().trim();
@@ -72,9 +120,24 @@ export const register = async (form: RegisterForm) => {
   if (validatePassword !== password)
     return json({ error: "Passwords doesn't match" });
 
-  return await createUser(form), redirect("/");
+  const newUser = await createUser(form);
+
+  if (!newUser) {
+    return json(
+      { error: "Something went wrong on creation process" },
+      { status: 400 }
+    );
+  }
+  return createUserSession(newUser.id, "/");
 };
 export const login = async (form: LoginForm) => {
-  const email = form.email.toString().toLowerCase().trim();
-  const password = form.password.toString().trim();
+  const userEmail = form.email.toLowerCase().trim();
+  const user = await prisma.user.findUnique({
+    where: { email: userEmail },
+  });
+
+  if (!user || !(await bcrypt.compare(form.password, user.password))) {
+    return json({ error: "Invalid username or password" }, { status: 400 });
+  }
+  return createUserSession(user.id, "/");
 };

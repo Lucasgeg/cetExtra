@@ -13,10 +13,12 @@ datasource db {
 model User {
   id         String     @id @default(auto()) @map("_id") @db.ObjectId
   email      String     @unique
+  firstName  String
+  lastName   String
   password   String
   birthday   String
   birthCity  String
-  role       Int        @default(1)
+  role       String     @default("Salle")
   statut     Int        @default(1)
   //mission relation many to many a faire plusieur user on la meme mission et vice verca
   missionIDs String[]   @db.ObjectId
