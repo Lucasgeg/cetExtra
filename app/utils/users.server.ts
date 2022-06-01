@@ -5,15 +5,16 @@ import { json } from "@remix-run/node";
 
 //////////////////////types////////////////////
 type UpdateForm = {
-  email: string;
-  firstName: string;
-  lastName: string;
-  password: string;
-  birthday: string;
-  birthCity: string;
-  role: string;
-  statut: number;
-  workedTime: number;
+  email?: string | undefined;
+  firstName?: string | undefined;
+  lastName?: string | undefined;
+  password?: string | undefined;
+  validatePassword?: string | undefined;
+  birthday?: string | undefined;
+  birthCity?: string | undefined;
+  role?: string | undefined;
+
+  statut?: number | undefined;
 };
 
 export const createUser = async (user: RegisterForm) => {
@@ -81,9 +82,40 @@ export const updateUser = async (id: string, form: UpdateForm) => {
   if (!user) {
     return json({ error: "User not found" });
   }
-  return await prisma.user.upsert({
+  let hashedPassword;
+  if (form.password) {
+    const validPasswordRegex =
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    if (!form.password.length || !validPasswordRegex.test(form.password)) {
+      return json({
+        error:
+          "Password must be at least 8 character, one letter, one special character",
+      });
+    }
+    if (form.password !== form.validatePassword) {
+      return json({ error: "Passwords doesn't matches" });
+    }
+    if (typeof form.password !== "string")
+      return json({ error: "password is not correct" });
+    else {
+      hashedPassword = await bcrypt.hash(form.password, 10);
+    }
+  }
+
+  await prisma.user.update({
     where: { id },
-    create: { ...form },
-    update: { ...form },
+    data: {
+      birthCity: form.birthCity || undefined,
+      birthday: form.birthday || undefined,
+      email: form.email || undefined,
+      firstName: form.firstName || undefined,
+      lastName: form.lastName || undefined,
+      password: hashedPassword || undefined,
+      role: form.role || undefined,
+      statut: form.statut || undefined,
+    },
   });
+  console.log("toto a réussi?");
+
+  return json({ message: "Toto est au bout", validate: true, modify: false });
 };

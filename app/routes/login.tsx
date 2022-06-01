@@ -68,7 +68,7 @@ export const action: ActionFunction = async ({ request }) => {
       return await login({ ...data });
     }
     default: {
-      return json({ error: "actionerror" });
+      return json({ error: "actionError" });
     }
   }
 };

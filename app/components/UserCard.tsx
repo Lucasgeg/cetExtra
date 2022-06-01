@@ -1,4 +1,5 @@
 import { Link } from "@remix-run/react";
+import { deleteUser } from "~/utils/users.server";
 
 type UserCardProps = {
   id: string;
@@ -11,9 +12,22 @@ type UserCardProps = {
 };
 
 const UserCard = (user: UserCardProps) => {
+  const deleteSelectedUser = async () => {
+    const answer = prompt(
+      "Merci de valider la suppression en écrivant le prénom de l'utilisateur à supprimer"
+    );
+
+    if (!answer || answer !== user.firstName) {
+      return alert("Erreur, pas suppression");
+    }
+    console.log(typeof user.id);
+
+    await deleteUser(user.id);
+    return alert(`${user.firstName} a bien été supprimé`);
+  };
   return (
     <div
-      className="userCard w-full md:w-44 bg-orange-200 flex flex-col mx-auto p-5"
+      className="userCard w-full md:w-48 bg-orange-200 flex flex-col mx-auto p-2"
       key={user.id}
     >
       <div className="PhotoAFaire mx-auto w-20 h-20 bg-white rounded-full mb-5"></div>
@@ -24,8 +38,15 @@ const UserCard = (user: UserCardProps) => {
         <p>{user.role}</p>
 
         <div className="">
-          <Link to={`/userUpdate/${user.id}`}>Toto</Link>
-          <button>Modifier</button> <button>Supprimer</button>
+          <Link to={`/userUpdate/${user.id}`}>
+            <button className="p-2 bg-red-400 border-2"> Modifier</button>
+          </Link>
+          <button
+            className="p-2 bg-red-400 border-2"
+            onClick={deleteSelectedUser}
+          >
+            Supprimer
+          </button>
         </div>
         <div className="">Proposer un extra</div>
       </div>

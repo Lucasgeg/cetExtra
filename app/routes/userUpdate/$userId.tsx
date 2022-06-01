@@ -1,26 +1,59 @@
-import { json, LoaderFunction } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
-import { useState } from "react";
+import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
+import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import { useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { getUserId } from "~/utils/auth.server";
-import { getUserInformation } from "~/utils/users.server";
+import { getUserInformation, updateUser } from "~/utils/users.server";
 
 type User = {
   id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
-  statut: number;
-  birthday: string;
-  birthCity: string;
-  workedTime: number;
-  password: string;
-  validatePassword: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+  role: string | null;
+  statut: number | null;
+  birthday: string | null;
+  birthCity: string | null;
+  workedTime: number | null;
+  password: string | null;
+  validatePassword: string | null;
 };
 type LoaderData = {
   user: User;
   consultingUserId: string;
 };
+
+export const action: ActionFunction = async ({ request }) => {
+  const form = await request.formData();
+  const id = form.get("id");
+  let email = form.get("email");
+  let firstName = form.get("firstName");
+  let lastName = form.get("lastName");
+  let birthday = form.get("birthday");
+  let birthCity = form.get("birthCity");
+  let role = form.get("role");
+  let statut = Number(form.get("statut"));
+  let password = form.get("password");
+  let validatePassword = form.get("validatePassword");
+
+  const data = {
+    email,
+    firstName,
+    lastName,
+    birthCity,
+    birthday,
+    role,
+    statut,
+    password,
+    validatePassword,
+  };
+
+  if (typeof id !== "string") throw new Error("Action error");
+
+  // @ts-ignore
+  return updateUser(id, data);
+};
+
 export const loader: LoaderFunction = async ({ params, request }) => {
   const userId = params.userId;
   const consultingUserId = await getUserId(request);
@@ -31,8 +64,19 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 };
 
 export default function userUpdate() {
-  const { user, consultingUserId } = useLoaderData<LoaderData>();
+  const data = useActionData();
 
+  const [passType, setPassType] = useState("password");
+  const [validatePassType, setValidatePassType] = useState("password");
+  const changeValidPassType = () => {
+    validatePassType == "password"
+      ? setValidatePassType("text")
+      : setValidatePassType("password");
+  };
+  const changePassType = () => {
+    passType == "password" ? setPassType("text") : setPassType("password");
+  };
+  const { user, consultingUserId } = useLoaderData<LoaderData>();
   const handleModify = () => {
     setModify(!modify);
   };
@@ -52,17 +96,22 @@ export default function userUpdate() {
     workedTime: user.workedTime,
     role: user.role,
     statut: user.statut,
-    password: "",
-    validatePassword: "",
+    password: undefined,
+    validatePassword: undefined,
   });
+
   return (
     <div className="w-full min-h-screen">
+      <div className="relative top-1 left-1 w-28 p-8 bg-orange-200">
+        <Link to={"/"}>Accueil</Link>
+      </div>
       <h1>Hello user Info Page</h1>
       <div className="w-3/4 mx-auto bg-orange-200">
         <h2>
           Information de: {user.firstName} {user.lastName}
         </h2>
         <div className="PhotoAFaire mx-auto w-32 h-32 bg-white rounded-full mb-5"></div>
+        {data?.error ? <p>{data?.error} </p> : null}
         {modify == false ? (
           <>
             <h2>
@@ -97,7 +146,7 @@ export default function userUpdate() {
                 className="w-44"
                 type="text"
                 name="email"
-                value={formData.email}
+                value={formData.email ? formData.email : ""}
                 onChange={(e) => handleInputChange(e, "email")}
               />{" "}
               <br />
@@ -107,21 +156,34 @@ export default function userUpdate() {
                   <br />
                   <input
                     className="w-44"
-                    type="password"
+                    type={passType}
                     name="password"
-                    value={formData.password}
+                    value={formData.password ? formData.password : undefined}
                     onChange={(e) => handleInputChange(e, "password")}
-                  />
+                  />{" "}
+                  <span className="cursor-pointer" onClick={changePassType}>
+                    {" "}
+                    👁️{" "}
+                  </span>
                   <br />
                   <label htmlFor="validatePassword">Password Validation</label>
                   <br />
                   <input
                     className="w-44"
-                    type="password"
+                    type={validatePassType}
                     name="validatePassword"
-                    value={formData.validatePassword}
+                    value={
+                      formData.validatePassword ? formData.validatePassword : ""
+                    }
                     onChange={(e) => handleInputChange(e, "validatePassword")}
-                  />{" "}
+                  />
+                  <span
+                    className="cursor-pointer"
+                    onClick={changeValidPassType}
+                  >
+                    {" "}
+                    👁️{" "}
+                  </span>
                 </>
               ) : null}
               <br />
@@ -131,7 +193,7 @@ export default function userUpdate() {
                 className="w-44"
                 type="text"
                 name="firstName"
-                value={formData.firstName}
+                value={formData.firstName ? formData.firstName : ""}
                 onChange={(e) => handleInputChange(e, "firstName")}
               />
               <br />
@@ -141,7 +203,7 @@ export default function userUpdate() {
                 className="w-44"
                 type="text"
                 name="lastName"
-                value={formData.lastName}
+                value={formData.lastName ? formData.lastName : ""}
                 onChange={(e) => handleInputChange(e, "lastName")}
               />
               <br />
@@ -152,7 +214,7 @@ export default function userUpdate() {
                 required={true}
                 type="date"
                 name="birthday"
-                value={formData.birthday}
+                value={formData.birthday ? formData.birthday : ""}
                 onChange={(e) => handleInputChange(e, "birthday")}
               />{" "}
               <br />
@@ -163,14 +225,39 @@ export default function userUpdate() {
                 required={true}
                 type="text"
                 name="birthCity"
-                value={formData.birthCity}
+                value={formData.birthCity ? formData.birthCity : ""}
                 onChange={(e) => handleInputChange(e, "birthCity")}
               />{" "}
               <br />
+              <label htmlFor="role">Role</label>
+              <br />
+              <input
+                className="w-44"
+                required={true}
+                type="text"
+                name="role"
+                value={formData.role ? formData.role : ""}
+                onChange={(e) => handleInputChange(e, "role")}
+              />{" "}
+              <br />
+              <label htmlFor="statut">Statut: {user.statut} </label>
+              <br />
+              <input
+                className="w-44"
+                required={true}
+                type="range"
+                min="1"
+                max="3"
+                name="statut"
+                value={formData.statut ? formData.statut : ""}
+                onChange={(e) => handleInputChange(e, "statut")}
+              />{" "}
+              <br />
+              <input type="hidden" name="id" value={user.id} />
               <button type="submit" name="_action" value={"valider"}>
                 Valider
               </button>
-              <button type="reset">Annuler</button>
+              {console.log(data?.message)}
             </Form>
           </>
         )}
