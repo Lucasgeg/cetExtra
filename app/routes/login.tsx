@@ -1,25 +1,11 @@
-import {
-  ActionFunction,
-  json,
-  LoaderFunction,
-  redirect,
-} from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import { useState } from "react";
 import { getUser, login, register } from "~/utils/auth.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   return (await getUser(request)) ? redirect("/") : null;
-};
-
-type Data = {
-  email: string;
-  password: string;
-  validatePassword: string;
-  birthday: string;
-  birthCity: string;
-  firstName: string;
-  lastName: string;
 };
 
 export const action: ActionFunction = async ({ request }) => {

@@ -1,7 +1,7 @@
-import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
-import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
+import { useState } from "react";
 import { getUserId } from "~/utils/auth.server";
 import { getUserInformation, updateUser } from "~/utils/users.server";
 
@@ -11,7 +11,7 @@ type User = {
   lastName: string | null;
   email: string | null;
   role: string | null;
-  statut: number | null;
+  statut: string | null;
   birthday: string | null;
   birthCity: string | null;
   workedTime: number | null;
@@ -126,7 +126,7 @@ export default function userUpdate() {
             <h2>
               Temps de travail: <span>{user.workedTime}</span>
             </h2>
-            {user.statut == 1 ? (
+            {user.statut == "ADMIN" ? (
               <>
                 <h2>
                   Role: <span>{user.role}</span>

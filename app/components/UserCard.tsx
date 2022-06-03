@@ -1,5 +1,4 @@
-import { Link } from "@remix-run/react";
-import { deleteUser } from "~/utils/users.server";
+import { Form, Link } from "@remix-run/react";
 
 type UserCardProps = {
   id: string;
@@ -12,18 +11,13 @@ type UserCardProps = {
 };
 
 const UserCard = (user: UserCardProps) => {
-  const deleteSelectedUser = async () => {
+  const deleteSelectedUser = () => {
     const answer = prompt(
       "Merci de valider la suppression en écrivant le prénom de l'utilisateur à supprimer"
     );
-
     if (!answer || answer !== user.firstName) {
       return alert("Erreur, pas suppression");
     }
-    console.log(typeof user.id);
-
-    await deleteUser(user.id);
-    return alert(`${user.firstName} a bien été supprimé`);
   };
   return (
     <div
@@ -41,12 +35,23 @@ const UserCard = (user: UserCardProps) => {
           <Link to={`/userUpdate/${user.id}`}>
             <button className="p-2 bg-red-400 border-2"> Modifier</button>
           </Link>
-          <button
-            className="p-2 bg-red-400 border-2"
-            onClick={deleteSelectedUser}
-          >
-            Supprimer
-          </button>
+          <Form method="post">
+            <input type="hidden" name="selectedUserId" value={user.id} />
+            <input
+              type="hidden"
+              name="selectedUserFirstName"
+              value={user.firstName}
+            />
+            <button
+              type="submit"
+              name="_action"
+              value={"delete"}
+              onClick={deleteSelectedUser}
+              className="p-2 bg-red-400 border-2"
+            >
+              Supprimer
+            </button>
+          </Form>
         </div>
         <div className="">Proposer un extra</div>
       </div>

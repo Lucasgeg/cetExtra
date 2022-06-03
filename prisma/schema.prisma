@@ -18,8 +18,8 @@ model User {
   password   String
   birthday   String
   birthCity  String
-  role       String     @default("Salle")
-  statut     Int        @default(1)
+  role       Role       @default(SALLE)
+  statut     Statut     @default(USER)
   //mission relation many to many a faire plusieur user on la meme mission et vice verca
   missionIDs String[]   @db.ObjectId
   missions   Missions[] @relation(fields: [missionIDs], references: [id])
@@ -31,10 +31,24 @@ model User {
 
 model Missions {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  creatorId   String
   missionName String
   userIDs     String[] @db.ObjectId
   users       User[]   @relation(fields: [userIDs], references: [id])
   beginAt     DateTime
   endAt       DateTime
   place       String
+  duration    String
+}
+
+enum Role {
+  SALLE
+  CUISINE
+  ADMIN
+}
+
+enum Statut {
+  ADMIN
+  MODERATEUR
+  USER
 }

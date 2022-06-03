@@ -1,7 +1,8 @@
-import { RegisterForm } from "./auth.server";
+import type { RegisterForm } from "./auth.server";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma.server";
 import { json } from "@remix-run/node";
+import type { Role, Statut } from "@prisma/client";
 
 //////////////////////types////////////////////
 type UpdateForm = {
@@ -12,9 +13,9 @@ type UpdateForm = {
   validatePassword?: string | undefined;
   birthday?: string | undefined;
   birthCity?: string | undefined;
-  role?: string | undefined;
+  role?: Role | undefined;
 
-  statut?: number | undefined;
+  statut?: Statut | undefined;
 };
 
 export const createUser = async (user: RegisterForm) => {
@@ -65,6 +66,13 @@ export const getUserInformation = async (id: string) => {
     },
   });
   return userInfo;
+};
+export const toto = async (id: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: { email: true },
+  });
+  return user;
 };
 export const deleteUser = async (id: string) => {
   const user = await prisma.user.findUnique({

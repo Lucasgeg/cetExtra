@@ -1,8 +1,10 @@
-import { json, LoaderFunction, redirect } from "@remix-run/node";
+import type { Statut } from "@prisma/client";
+import type { LoaderFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import Logout from "~/components/Logout";
 import Menu from "~/components/Menu";
-import { getUser, getUserId } from "~/utils/auth.server";
+import { getUser } from "~/utils/auth.server";
 
 type LoaderData = {
   userId: string | undefined;
@@ -11,7 +13,7 @@ type LoaderData = {
   birthday: string | undefined;
   firstName: string | undefined;
   lastName: string | undefined;
-  statut: number;
+  statut: Statut;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -38,18 +40,14 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function Index() {
-  const { birthCity, birthday, email, firstName, lastName, userId, statut } =
-    useLoaderData<LoaderData>();
+  const { email, firstName, statut } = useLoaderData<LoaderData>();
   return (
     <div className="text-white min-h-screen">
+      <Menu statut={statut} />
       <h1>Hello {firstName}</h1>
       <h2>Ceci est la page d'accueil une fois connecté</h2>
-      <Link to={"/login"}>
-        {" "}
-        <button>login</button>{" "}
-      </Link>
+
       <Logout email={email} />
-      <Menu statut={statut} />
     </div>
   );
 }

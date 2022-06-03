@@ -1,8 +1,9 @@
-import { json, LoaderFunction, redirect } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import UserCard from "~/components/UserCard";
 import { getUser } from "~/utils/auth.server";
-import { getUserList } from "~/utils/users.server";
+import { deleteUser, getUserList } from "~/utils/users.server";
 
 type Users = {
   id: string;
@@ -17,9 +18,27 @@ type LoaderData = {
   users: Users[];
 };
 
+export const action: ActionFunction = async ({ request }) => {
+  const form = await request.formData();
+  const selectedUserId = form.get("selectedUserId");
+  const action = form.get("_action");
+
+  switch (action) {
+    case "delete": {
+      if (!selectedUserId || typeof selectedUserId !== "string") {
+        return json({ error: "User Id not found on the db" });
+      }
+      return await deleteUser(selectedUserId);
+    }
+    default:
+      return json({ error: "error on the action Switch" });
+  }
+};
+
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request);
-  user?.statut !== 1 ? redirect("/") : null;
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  user?.statut !== "ADMIN" ? redirect("/") : null;
 
   const userList = await getUserList();
 
