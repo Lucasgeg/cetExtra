@@ -15,11 +15,13 @@
     "@remix-run/vercel": "^1.5.1",
     "@vercel/node": "^1.15.2",
     "bcryptjs": "^2.4.3",
+    "date-fns": "^2.28.0",
     "dateformat": "^5.0.3",
     "prisma": "^3.14.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "validator": "^13.7.0"
+    "validator": "^13.7.0",
+    "yarn": "^1.22.18"
   },
   "devDependencies": {
     "@remix-run/dev": "^1.5.1",

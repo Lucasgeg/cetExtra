@@ -51,7 +51,19 @@ export const createMission = async (form: CreateForm) => {
   return json({ message: "Mission créer avec succès" });
 };
 export const getMissions = async () => {
-  return await prisma.missions.findMany({});
+  const today = new Date();
+  const futureMisions = await prisma.missions.findMany({
+    where: {
+      beginAt: { gte: today },
+    },
+    orderBy: { beginAt: "asc" },
+  });
+  const pastMissions = await prisma.missions.findMany({
+    where: {
+      beginAt: { lte: today },
+    },
+  });
+  return { futureMisions: futureMisions, pastMissions: pastMissions };
 };
 export const getMissionInformation = async (id: string) => {
   if (!id) return json({ errorMessage: "Mission non trouvé" });

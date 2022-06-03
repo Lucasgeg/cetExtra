@@ -1,7 +1,7 @@
 import type { Statut } from "@prisma/client";
 import type { LoaderFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import Logout from "~/components/Logout";
 import Menu from "~/components/Menu";
 import { getUser } from "~/utils/auth.server";
