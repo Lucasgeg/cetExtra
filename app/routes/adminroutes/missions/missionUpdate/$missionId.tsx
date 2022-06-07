@@ -1,8 +1,9 @@
-import { json, LoaderFunction, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import { Form, useLoaderData } from "@remix-run/react";
 import { format } from "date-fns";
 import { useState } from "react";
-import { getUser, getUserId } from "~/utils/auth.server";
+import { getUser } from "~/utils/auth.server";
 import { getMissionInformation } from "~/utils/missions.server";
 
 type Mission = {
@@ -33,6 +34,15 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   if (consultingUser?.statut == "USER") return redirect("/");
   return json({ mission: mission, user: consultingUser });
 };
+//////////////////////////ACTION FUNCTION//////////////////////////
+export const action: ActionFunction = async ({ request }) => {
+  const form = await request.formData();
+  const action = form.get("_action");
+  const missionName = form.get("missionName");
+  const beginAt = form.get("beginAt");
+  const endAt = form.get("endAt");
+  const place = form.get("place");
+};
 
 const $missionId = () => {
   const { mission, user } = useLoaderData<LoaderData>();
@@ -41,7 +51,18 @@ const $missionId = () => {
   const handleClick = () => {
     setUpdateMode(!updateMode);
   };
-  const [formData, setFormData] = useState({});
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    field: string
+  ) => {
+    setFormData((form) => ({ ...form, [field]: event.target.value }));
+  };
+  const [formData, setFormData] = useState({
+    missionName: "",
+    beginAt: "",
+    endAt: "",
+    place: "",
+  });
   return (
     <div>
       <h1>
@@ -50,10 +71,43 @@ const $missionId = () => {
       </h1>
       {updateMode ? (
         <>
-          <label>
-            Nom de la mission
-            <input type="text" name="missionName" />
-          </label>
+          <Form method="post">
+            <label htmlFor="missionName">Nom de la mission</label>
+            <input
+              type="text"
+              name="missionName"
+              value={formData.missionName}
+              onChange={(e) => handleInputChange(e, "missionName")}
+            />
+            <br />
+            Horaires de la mission:
+            <label htmlFor="beginAt">Début</label>
+            <input
+              type="datetime-local"
+              name="beginAt"
+              value={formData.beginAt}
+              onChange={(e) => handleInputChange(e, "beginAt")}
+            />{" "}
+            <br />
+            <label htmlFor="endAt">Fin</label>
+            <input
+              type="datetime-local"
+              name="endAt"
+              value={formData.endAt}
+              onChange={(e) => handleInputChange(e, "endAt")}
+            />{" "}
+            <br />
+            <label htmlFor="place">Lieu de la mission:</label>
+            <input
+              type="text"
+              name="place"
+              value={formData.place}
+              onChange={(e) => handleInputChange(e, "place")}
+            />
+            <button type="submit" name="_action" value={"update"}>
+              Valider
+            </button>
+          </Form>
         </>
       ) : (
         <>

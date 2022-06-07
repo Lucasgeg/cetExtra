@@ -47,6 +47,8 @@ const index = () => {
   const handleChange = () => {
     setToPastMission(!toPastMission);
   };
+  console.log(toPastMission);
+
   return (
     <div className="">
       <h1>Hello Mission List Page</h1>
@@ -69,32 +71,43 @@ const index = () => {
               {pastMissionList.map((m) => (
                 <tr key={m.id}>
                   <td>{m.missionName}</td>
-                  <td>{format(new Date(m.beginAt), "MM/dd/yyyy HH:mm")}</td>
-                  <td>{m.place}</td>
-                  <td> 👁️ {userStatut == "USER" ? null : " 🖊️ ❌"} </td>
-                </tr>
-              ))}
-            </>
-          ) : (
-            <>
-              {futureMissionList.map((m) => (
-                <tr key={m.id}>
-                  {console.log(m.id)}
-                  <td>{m.missionName}</td>
-                  <td>{format(new Date(m.beginAt), "MM/dd/yyyy HH:mm")}</td>
+                  <td>{format(new Date(m.beginAt), "dd/MM/yyyy HH:mm")}</td>
                   <td>{m.place}</td>
                   <td>
-                    {
-                      <Link to={`/adminroutes/missions/missionUpdate/${m.id}`}>
-                        {" "}
-                        👁️
-                      </Link>
-                    }{" "}
-                    {userStatut !== "ADMIN" ? null : " 🖊️ ❌"}{" "}
+                    {" "}
+                    <Link to={`/adminroutes/missions/missionUpdate/${m.id}`}>
+                      👁️
+                    </Link>
+                    {userStatut == "USER" ? null : " ❌"}
                   </td>
                 </tr>
               ))}
             </>
+          ) : futureMissionList.length ? (
+            <>
+              <h2>Pas de mission à venir!</h2>
+              <button>
+                <Link to={"/adminroutes/missions/createMission"}>
+                  Créer une mission
+                </Link>
+              </button>
+            </>
+          ) : (
+            futureMissionList.map((m) => {
+              <tr key={m.id}>
+                <td>{m.missionName}</td>
+                <td>{format(new Date(m.beginAt), "dd/MM/yyyy HH:mm")}</td>
+                <td>{m.place}</td>
+                <td>
+                  {
+                    <Link to={`/adminroutes/missions/missionUpdate/${m.id}`}>
+                      👁️
+                    </Link>
+                  }
+                  {userStatut !== "ADMIN" ? null : " ❌"}
+                </td>
+              </tr>;
+            })
           )}
         </tbody>
       </table>
