@@ -39,6 +39,8 @@ model Missions {
   endAt       DateTime
   place       String
   duration    String
+  lat         Int?
+  lng         Int?
 }
 
 enum Role {

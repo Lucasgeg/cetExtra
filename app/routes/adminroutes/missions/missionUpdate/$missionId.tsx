@@ -32,7 +32,10 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   const consultingUser = await getUser(request);
   const mission = await getMissionInformation(missionId);
   if (consultingUser?.statut == "USER") return redirect("/");
-  return json({ mission: mission, user: consultingUser });
+  const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+  if (!apiKey) return console.log("ApiKey is Needed!");
+
+  return json({ mission: mission, user: consultingUser, apiKey: apiKey });
 };
 //////////////////////////ACTION FUNCTION//////////////////////////
 export const action: ActionFunction = async ({ request }) => {
@@ -127,7 +130,6 @@ const $missionId = () => {
               Mission créer par: {user.firstName} {user.lastName}
             </p>
             <p>Lieu de la mission: {mission.place}</p>
-            <p>Carte a venir</p>
             <p>Liste des extras:</p>
             <p>A venir</p>
           </div>

@@ -51,3 +51,8 @@ export default function Index() {
     </div>
   );
 }
+
+export const ErrorBoundary: any = (error: Error) => {
+  console.log("toto");
+  return <div className=""> {error} </div>;
+};
