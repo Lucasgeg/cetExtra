@@ -46,6 +46,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 const usersList = () => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { users } = useLoaderData<LoaderData>();
 
   return (

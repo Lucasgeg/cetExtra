@@ -1,24 +1,30 @@
+import type { Statut } from "@prisma/client";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import { format } from "date-fns";
 import { useState } from "react";
+import MapComponent from "~/components/MapComponent";
+import Menu from "~/components/Menu";
 import { getUser } from "~/utils/auth.server";
-import { getMissionInformation } from "~/utils/missions.server";
+import { getMissionInformation, updateMission } from "~/utils/missions.server";
 
 type Mission = {
   id: string;
   creatorId: string;
   missionName: string;
-  beginAt: Date;
-  endAt: Date;
+  beginAt: string;
+  endAt: string;
   place: string;
   duration: string;
+  lat: number;
+  lng: number;
 };
 
 type User = {
   firstName: string;
   lastName: string;
+  statut: Statut;
 };
 
 type LoaderData = {
@@ -40,11 +46,23 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 //////////////////////////ACTION FUNCTION//////////////////////////
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
-  const action = form.get("_action");
+  const id = form.get("missionId");
   const missionName = form.get("missionName");
   const beginAt = form.get("beginAt");
   const endAt = form.get("endAt");
   const place = form.get("place");
+  const lat = +form.get("lat");
+  const lng = +form.get("lng");
+  console.log(id);
+
+  try {
+    if (typeof id !== "string") throw new Error("Pas d'id");
+    const data = { missionName, beginAt, endAt, place, lat, lng };
+    // @ts-ignore
+    return updateMission(id, data);
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
 const $missionId = () => {
@@ -61,13 +79,18 @@ const $missionId = () => {
     setFormData((form) => ({ ...form, [field]: event.target.value }));
   };
   const [formData, setFormData] = useState({
-    missionName: "",
-    beginAt: "",
-    endAt: "",
-    place: "",
+    id: mission.id,
+    missionName: mission.missionName,
+    beginAt: mission.beginAt,
+    endAt: mission.endAt,
+    place: mission.place,
+    lat: mission.lat,
+    lng: mission.lng,
   });
+
   return (
     <div>
+      <Menu statut={user.statut} />
       <h1>
         Page d'information de la mission:
         <br /> {mission.missionName}
@@ -100,13 +123,22 @@ const $missionId = () => {
               onChange={(e) => handleInputChange(e, "endAt")}
             />{" "}
             <br />
-            <label htmlFor="place">Lieu de la mission:</label>
+            <MapComponent
+              formData={formData}
+              setFormData={setFormData}
+              search={true}
+            />
+            <input type="hidden" value={formData.id} name="missionId" />
+            <input type="hidden" value={formData.place} name="place" />
+            <input type="hidden" value={formData.lat} name="lat" />
+            <input type="hidden" value={formData.lng} name="lng" />
+            {/* <label htmlFor="place">Lieu de la mission:</label>
             <input
               type="text"
               name="place"
               value={formData.place}
               onChange={(e) => handleInputChange(e, "place")}
-            />
+            /> */}
             <button type="submit" name="_action" value={"update"}>
               Valider
             </button>
@@ -119,23 +151,30 @@ const $missionId = () => {
             <div className="">
               <div className="">
                 Début: <br />
-                {format(new Date(mission.beginAt), "MM/dd/yyyy HH:mm")}
+                {format(new Date(mission.beginAt), "dd/MM/yyyy HH:mm")}
               </div>
               <div className="">
                 Fin: <br />
-                {format(new Date(mission.endAt), "MM/dd/yyyy HH:mm")}
+                {format(new Date(mission.endAt), "dd/MM/yyyy HH:mm")}
               </div>
             </div>
             <p>
               Mission créer par: {user.firstName} {user.lastName}
             </p>
             <p>Lieu de la mission: {mission.place}</p>
+            <MapComponent
+              formData={formData}
+              setFormData={setFormData}
+              search={false}
+            />
             <p>Liste des extras:</p>
             <p>A venir</p>
           </div>
         </>
       )}
-      <button onClick={handleClick}>Modifier</button>
+      {user.statut !== "USER" ? (
+        <button onClick={handleClick}>Modifier</button>
+      ) : null}
     </div>
   );
 };

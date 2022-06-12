@@ -4,7 +4,6 @@ import {
   Marker,
   useLoadScript,
 } from "@react-google-maps/api";
-import "@reach/combobox/styles.css";
 import { useLoaderData } from "@remix-run/react";
 import { useCallback, useRef, useState } from "react";
 import mapStyle from "./mapStyle";
@@ -19,7 +18,20 @@ import {
   ComboboxOption,
   ComboboxPopover,
 } from "@reach/combobox";
-
+import { format } from "date-fns";
+type Data = {
+  formData: FormData;
+  setFormData: any;
+  search: boolean;
+};
+type FormData = {
+  missionName: string;
+  beginAt: string;
+  endAt: string;
+  place: string;
+  lat: number;
+  lng: number;
+};
 type libraries = [
   "drawing" | "geometry" | "localContext" | "places" | "visualization"
 ];
@@ -33,10 +45,10 @@ const options = {
   disableDefaultUI: true,
   zoomControl: true,
 };
-const MapComponent = () => {
+const MapComponent = ({ formData, setFormData, search }: Data) => {
   type LatLng = {
-    lat: any;
-    lng: any;
+    lat: number;
+    lng: number;
   };
   const { apiKey } = useLoaderData();
   const { isLoaded } = useLoadScript({
@@ -49,8 +61,15 @@ const MapComponent = () => {
   });
   const [selected, setSelected] = useState(false);
   const onMapClick = (e: google.maps.MapMouseEvent | undefined) => {
-    if (typeof e == "undefined") return false;
+    if (typeof e == "undefined") return;
+
     setMarker({
+      lat: e.latLng.lat(),
+      lng: e.latLng.lng(),
+    });
+
+    setFormData({
+      ...formData,
       lat: e.latLng.lat(),
       lng: e.latLng.lng(),
     });
@@ -67,9 +86,14 @@ const MapComponent = () => {
   if (!isLoaded) return <div className="">Loading...</div>;
   return (
     <div>
-      <Search panTo={panTo} />
+      {search ? (
+        <Search panTo={panTo} formData={formData} setFormData={setFormData} />
+      ) : null}
+
       <GoogleMap
-        center={center}
+        center={
+          formData.lat ? { lat: formData.lat, lng: formData.lng } : center
+        }
         zoom={zoom}
         mapContainerStyle={mapContainerStyle}
         options={options}
@@ -78,7 +102,11 @@ const MapComponent = () => {
       >
         {marker ? (
           <Marker
-            position={{ lat: marker.lat, lng: marker.lng }}
+            position={
+              formData.lat
+                ? { lat: formData.lat, lng: formData.lng }
+                : { lat: marker.lat, lng: marker.lng }
+            }
             onClick={() => {
               setSelected(!selected);
             }}
@@ -89,10 +117,14 @@ const MapComponent = () => {
                   setSelected(!selected);
                 }}
               >
-                <div className="">
-                  <h2>Nom presta</h2>
-                  <h3>Lieu Presta</h3>
-                  <p>Adresse et heure</p>
+                <div className="text-center">
+                  <h2>{formData.missionName}</h2>
+                  <h3> {formData.place} </h3>
+
+                  <p>
+                    Heure de début:{" "}
+                    {format(new Date(formData.beginAt), "dd/MM/yyyy HH:mm")}
+                  </p>
                 </div>
               </InfoWindow>
             ) : null}
@@ -105,7 +137,7 @@ const MapComponent = () => {
 
 export default MapComponent;
 
-const Search = ({ panTo }) => {
+export const Search = ({ formData, setFormData, panTo }) => {
   const {
     ready,
     value,
@@ -121,8 +153,15 @@ const Search = ({ panTo }) => {
     clearSuggestions();
     try {
       const results = await getGeocode({ address });
+      const place = results[0].formatted_address;
       const { lat, lng } = getLatLng(results[0]);
       panTo({ lat, lng });
+      setFormData({
+        ...formData,
+        place,
+        lat: lat,
+        lng: lng,
+      });
     } catch (error) {
       console.log("Error!!! :", error);
     }

@@ -67,13 +67,6 @@ export const getUserInformation = async (id: string) => {
   });
   return userInfo;
 };
-export const toto = async (id: string) => {
-  const user = await prisma.user.findUnique({
-    where: { id },
-    select: { email: true },
-  });
-  return user;
-};
 export const deleteUser = async (id: string) => {
   const user = await prisma.user.findUnique({
     where: { id },
@@ -123,7 +116,7 @@ export const updateUser = async (id: string, form: UpdateForm) => {
       statut: form.statut || undefined,
     },
   });
-  console.log("toto a réussi?");
+  console.log("toto a réussi!");
 
   return json({ message: "Toto est au bout", validate: true, modify: false });
 };

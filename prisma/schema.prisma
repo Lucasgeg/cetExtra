@@ -39,14 +39,13 @@ model Missions {
   endAt       DateTime
   place       String
   duration    String
-  lat         Int?
-  lng         Int?
+  lat         Float
+  lng         Float
 }
 
 enum Role {
   SALLE
   CUISINE
-  ADMIN
 }
 
 enum Statut {

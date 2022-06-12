@@ -1,4 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import { Statut } from "@prisma/client";
+import { Role } from "@prisma/client";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
@@ -11,8 +13,8 @@ type User = {
   firstName: string | null;
   lastName: string | null;
   email: string | null;
-  role: string | null;
-  statut: string | null;
+  role: Role;
+  statut: Statut;
   birthday: string | null;
   birthCity: string | null;
   workedTime: number | null;
@@ -82,7 +84,9 @@ export default function userUpdate() {
     setModify(!modify);
   };
   const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLSelectElement>,
     field: string
   ) => {
     setFormData((form) => ({ ...form, [field]: event.target.value }));
@@ -100,7 +104,8 @@ export default function userUpdate() {
     password: undefined,
     validatePassword: undefined,
   });
-
+  const rolesArray = Object.keys(Role) as (keyof typeof Role)[];
+  const statutArray = Object.keys(Statut) as (keyof typeof Statut)[];
   return (
     <div className="w-full min-h-screen">
       <div className="relative top-1 left-1 w-28 p-8 bg-orange-200">
@@ -125,13 +130,13 @@ export default function userUpdate() {
               Ville de naissance: <span> {user.birthCity} </span>{" "}
             </h2>
             <h2>
+              Role: <span>{user.role.toLowerCase()}</span>
+            </h2>
+            <h2>
               Temps de travail: <span>{user.workedTime}</span>
             </h2>
             {user.statut == "ADMIN" ? (
               <>
-                <h2>
-                  Role: <span>{user.role}</span>
-                </h2>
                 <h2>
                   Statut: <span>{user.statut}</span>
                 </h2>
@@ -230,29 +235,53 @@ export default function userUpdate() {
                 onChange={(e) => handleInputChange(e, "birthCity")}
               />{" "}
               <br />
-              <label htmlFor="role">Role</label>
-              <br />
-              <input
-                className="w-44"
-                required={true}
-                type="text"
-                name="role"
-                value={formData.role ? formData.role : ""}
-                onChange={(e) => handleInputChange(e, "role")}
-              />{" "}
-              <br />
-              <label htmlFor="statut">Statut: {user.statut} </label>
-              <br />
-              <input
-                className="w-44"
-                required={true}
-                type="range"
-                min="1"
-                max="3"
-                name="statut"
-                value={formData.statut ? formData.statut : ""}
-                onChange={(e) => handleInputChange(e, "statut")}
-              />{" "}
+              {user.statut !== "USER" ? (
+                <>
+                  <label htmlFor="role">Role</label>
+                  <br />
+                  <select
+                    name="role"
+                    id="role"
+                    value={formData.role}
+                    onChange={(e) => handleInputChange(e, "role")}
+                  >
+                    {rolesArray.map((r) => {
+                      return (
+                        <option value={Role[r]} key={Role[r]}>
+                          {Role[r]}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <br />
+                  <label htmlFor="statut">Statut: {formData.statut} </label>
+                  <br />
+                  <select
+                    name="statut"
+                    id="statut"
+                    value={formData.statut}
+                    onChange={(e) => handleInputChange(e, "statut")}
+                  >
+                    {statutArray.map((s) => {
+                      return (
+                        <option value={Statut[s]} key={Statut[s]}>
+                          {Statut[s]}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  {/* <input
+                    className="w-44"
+                    required={true}
+                    type="range"
+                    min="1"
+                    max="3"
+                    name="statut"
+                    value={formData.statut ? formData.statut : ""}
+                    onChange={(e) => handleInputChange(e, "statut")}
+                  /> */}
+                </>
+              ) : null}
               <br />
               <input type="hidden" name="id" value={user.id} />
               <button type="submit" name="_action" value={"valider"}>

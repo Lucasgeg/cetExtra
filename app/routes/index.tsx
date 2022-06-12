@@ -40,12 +40,12 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function Index() {
-  const { email, firstName, statut } = useLoaderData<LoaderData>();
+  const { email, firstName, statut, userId } = useLoaderData<LoaderData>();
   return (
     <div className="text-white min-h-screen">
-      <Menu statut={statut} />
+      <Menu statut={statut} id={userId} />
       <h1>Hello {firstName}</h1>
-      <h2>Ceci est la page d'accueil une fois connecté</h2>
+      <h2>Ceci est la page d'accueil une fois connecté en tant que {statut}</h2>
 
       <Logout email={email} />
     </div>

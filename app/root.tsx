@@ -14,6 +14,11 @@ export function links() {
   return [
     { rel: "stylesheet", href: styles },
     { rel: "stylesheet", href: directStyle },
+    {
+      rel: "stylesheet",
+      type: "text/css",
+      href: "node_modules/@reach/combobox/styles.css",
+    },
   ];
 }
 export const meta: MetaFunction = () => ({
