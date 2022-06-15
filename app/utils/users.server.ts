@@ -18,6 +18,22 @@ type UpdateForm = {
   statut?: Statut | undefined;
 };
 
+export const registerPending = async (user: RegisterForm) => {
+  const passwordHash = await bcrypt.hash(user.password, 10);
+
+  const newUser = await prisma.pendingUser.create({
+    data: {
+      email: user.email,
+      password: passwordHash,
+      birthday: user.birthday,
+      birthCity: user.birthCity,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    },
+  });
+  return { id: newUser.id, email: newUser.email };
+};
+
 export const createUser = async (user: RegisterForm) => {
   const passwordHash = await bcrypt.hash(user.password, 10);
 

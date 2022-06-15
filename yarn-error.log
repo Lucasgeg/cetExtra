@@ -1,8 +1,8 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Users\Sulac\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add @types/google.maps
+  C:\Program Files\nodejs\node.exe C:\Users\Sulac\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add @emailjs
 
 PATH: 
-  C:\Users\Sulac\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\Sulac\bin;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Users\Sulac\AppData\Local\Programs\Python\Python39\Scripts;C:\Users\Sulac\AppData\Local\Programs\Python\Python39;C:\Program Files\Oculus\Support\oculus-runtime;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\WINDOWS\System32\OpenSSH;C:\Program Files (x86)\dotnet;C:\Program Files\dotnet;C:\Program Files (x86)\Brackets\command;C:\ProgramData\chocolatey\bin;C:\Program Files\Git\cmd;C:\Program Files\nodejs;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Program Files\MySQL\MySQL Shell 8.0\bin;C:\Users\Sulac\AppData\Local\Microsoft\WindowsApps;C:\Users\Sulac\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Sulac\AppData\Roaming\npm;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl
+  C:\Users\Sulac\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\Sulac\bin;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Users\Sulac\AppData\Local\Programs\Python\Python39\Scripts;C:\Users\Sulac\AppData\Local\Programs\Python\Python39;C:\Program Files\Oculus\Support\oculus-runtime;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\WINDOWS\System32\OpenSSH;C:\Program Files (x86)\dotnet;C:\Program Files\dotnet;C:\Program Files (x86)\Brackets\command;C:\ProgramData\chocolatey\bin;C:\Program Files\Git\cmd;C:\Program Files\nodejs;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Program Files\MySQL\MySQL Shell 8.0\bin;C:\Users\Sulac\AppData\Local\Microsoft\WindowsApps;C:\Users\Sulac\AppData\Roaming\npm;C:\Users\Sulac\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl
 
 Yarn version: 
   1.22.18
@@ -14,7 +14,17 @@ Platform:
   win32 x64
 
 Trace: 
-  Error: EPERM: operation not permitted, unlink 'C:\dev\cetExtra\node_modules\esbuild-windows-64\esbuild.exe'
+  Error: https://registry.yarnpkg.com/@emailjs: Request "https://registry.yarnpkg.com/@emailjs" returned a 405
+      at Request.params.callback [as _callback] (C:\Users\Sulac\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:66147:18)
+      at Request.self.callback (C:\Users\Sulac\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:140883:22)
+      at Request.emit (node:events:527:28)
+      at Request.<anonymous> (C:\Users\Sulac\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141855:10)
+      at Request.emit (node:events:527:28)
+      at IncomingMessage.<anonymous> (C:\Users\Sulac\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141777:12)
+      at Object.onceWrapper (node:events:641:28)
+      at IncomingMessage.emit (node:events:539:35)
+      at endReadableNT (node:internal/streams/readable:1342:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
 
 npm manifest: 
   {
@@ -39,6 +49,7 @@ npm manifest:
       "date-fns": "^2.28.0",
       "dateformat": "^5.0.3",
       "google-map-react": "^2.1.10",
+      "nodemailer": "^6.7.5",
       "prisma": "^3.14.0",
       "react": "^17.0.2",
       "react-dom": "^17.0.2",
@@ -52,6 +63,7 @@ npm manifest:
       "@remix-run/serve": "^1.5.1",
       "@types/bcryptjs": "^2.4.2",
       "@types/google.maps": "^3.49.2",
+      "@types/nodemailer": "^6.4.4",
       "@types/react": "^17.0.45",
       "@types/react-dom": "^17.0.17",
       "autoprefixer": "^10.4.7",
@@ -1742,6 +1754,13 @@ Lockfile:
     "integrity" "sha512-vu1SrqBjbbZ3J6vwY17jBs8Sr/BKA+/a/WtjRG+whKg1iuLFOosq872EXS0eXWILdO36DHQQeku/ZcL6hz2fpg=="
     "resolved" "https://registry.npmjs.org/@types/node/-/node-17.0.35.tgz"
     "version" "17.0.35"
+  
+  "@types/nodemailer@^6.4.4":
+    "integrity" "sha512-Ksw4t7iliXeYGvIQcSIgWQ5BLuC/mljIEbjf615svhZL10PE9t+ei8O9gDaD3FPCasUJn9KTLwz2JFJyiiyuqw=="
+    "resolved" "https://registry.npmjs.org/@types/nodemailer/-/nodemailer-6.4.4.tgz"
+    "version" "6.4.4"
+    dependencies:
+      "@types/node" "*"
   
   "@types/normalize-package-data@^2.4.0":
     "integrity" "sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw=="
@@ -5511,6 +5530,11 @@ Lockfile:
     "integrity" "sha512-U9h1NLROZTq9uE1SNffn6WuPDg8icmi3ns4rEl/oTfIle4iLjTliCzgTsbaIFMq/Xn078/lfY/BL0GWZ+psK4Q=="
     "resolved" "https://registry.npmjs.org/node-releases/-/node-releases-2.0.5.tgz"
     "version" "2.0.5"
+  
+  "nodemailer@^6.7.5":
+    "integrity" "sha512-6VtMpwhsrixq1HDYSBBHvW0GwiWawE75dS3oal48VqRhUvKJNnKnJo2RI/bCVQubj1vgrgscMNW4DHaD6xtMCg=="
+    "resolved" "https://registry.npmjs.org/nodemailer/-/nodemailer-6.7.5.tgz"
+    "version" "6.7.5"
   
   "normalize-package-data@^2.5.0":
     "integrity" "sha512-/5CMN3T0R4XTj4DcGaexo+roZSdSFW/0AOOTROrjxzCG1wrWXEsGbRKevjlIL+ZDE4sZlJr5ED4YW0yqmkK+eA=="

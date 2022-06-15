@@ -16,7 +16,8 @@ const UserCard = (user: UserCardProps) => {
       "Merci de valider la suppression en écrivant le prénom de l'utilisateur à supprimer"
     );
     if (!answer || answer !== user.firstName) {
-      return alert("Erreur, pas suppression");
+      alert("Erreur, pas suppression");
+      return false;
     }
   };
   return (

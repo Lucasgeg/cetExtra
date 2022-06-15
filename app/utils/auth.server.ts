@@ -129,13 +129,17 @@ export const register = async (form: RegisterForm) => {
     );
   }
   return createUserSession(newUser.id, "/");
+  //return json({ error: "Check you mail for validation" });
 };
 export const login = async (form: LoginForm) => {
   const userEmail = form.email.toLowerCase().trim();
+  const userIsPending = await prisma.pendingUser.findUnique({
+    where: { email: userEmail },
+  });
   const user = await prisma.user.findUnique({
     where: { email: userEmail },
   });
-
+  if (userIsPending) return json({ error: "Account is not validated" });
   if (!user || !(await bcrypt.compare(form.password, user.password))) {
     return json({ error: "Invalid username or password" }, { status: 400 });
   }
