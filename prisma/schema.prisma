@@ -22,22 +22,24 @@ model PendingUser {
 }
 
 model User {
-  id         String     @id @default(auto()) @map("_id") @db.ObjectId
-  email      String     @unique
-  firstName  String
-  lastName   String
-  password   String
-  birthday   String
-  birthCity  String
-  role       Role       @default(SALLE)
-  statut     Statut     @default(USER)
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  email        String     @unique
+  firstName    String
+  lastName     String
+  password     String
+  birthday     String
+  birthCity    String
+  pendingToken String[]
+  role         Role       @default(SALLE)
+  statut       Statut     @default(USER)
   //mission relation many to many a faire plusieur user on la meme mission et vice verca
-  missionIDs String[]   @db.ObjectId
-  missions   Missions[] @relation(fields: [missionIDs], references: [id])
+  missionIDs   String[]   @db.ObjectId
+  missions     Missions[] @relation(fields: [missionIDs], references: [id])
   //contract relation one to many a faire user a plusieur contrat
-  workedTime Int        @default(0)
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  workedTime   Int        @default(0)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
 }
 
 model Missions {
@@ -52,6 +54,14 @@ model Missions {
   duration    String
   lat         Float
   lng         Float
+}
+
+model PendingUserToMission {
+  //mettre token en ID
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  userMail  String
+  missionId String
+  token     String
 }
 
 enum Role {

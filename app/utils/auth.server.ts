@@ -73,6 +73,7 @@ export async function getUser(request: Request) {
         lastName: true,
         missionIDs: true,
         missions: true,
+        pendingToken: true,
         role: true,
         statut: true,
         workedTime: true,

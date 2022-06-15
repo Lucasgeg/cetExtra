@@ -1,13 +1,8 @@
 import sgMail from "@sendgrid/mail";
 import crypto from "crypto";
 type Body = {
-  firstName: string;
-  lastName: string;
   email: string;
-  password: string;
-  repeatPassword: string;
-  birthday: Date;
-  birthCity: string;
+  message: string;
 };
 
 type Req = {
@@ -21,8 +16,8 @@ export default function handler(req: Req, res) {
     res.status(405).json({ message: "INVALID_METHOD" });
     return;
   }
-  const { email, firstName, lastName } = req.body;
-  if (!firstName || !lastName || !email) {
+  const { email, message } = req.body;
+  if (!message || !email) {
     res.status(400).json({ message: "INVALID_PARAMETER" });
     return;
   }
@@ -44,10 +39,10 @@ export default function handler(req: Req, res) {
   //création du mail
   const sendGridMail = {
     to: email,
-    from: "lucas.gegot.pro@gmail.com",
-    templateId: "d-cad383b83a1a482690bf97c103aefc28",
+    from: "contact@lvp-web.fr",
+    templateId: "d-55310f6ba05a4d0fa87efce98dfc4a5b", // testform
     dynamic_template_data: {
-      firstName: firstName,
+      message: message,
       email: email,
       token: token,
     },
