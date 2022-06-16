@@ -13,7 +13,7 @@ type LoaderData = {
   birthday: string | undefined;
   firstName: string | undefined;
   lastName: string | undefined;
-  statut: Statut;
+  userStatut: Statut;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -26,7 +26,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const birthday = user?.birthday;
   const firstName = user?.firstName;
   const lastName = user?.lastName;
-  const statut = user.statut;
+  const userStatut = user.statut;
   const data: LoaderData = {
     userId,
     birthCity,
@@ -34,20 +34,19 @@ export const loader: LoaderFunction = async ({ request }) => {
     email,
     firstName,
     lastName,
-    statut,
+    userStatut,
   };
   return json(data);
 };
 
-export default function Index() {
-  const { email, firstName, statut, userId } = useLoaderData<LoaderData>();
+export default function index() {
   return (
     <div className="text-white min-h-screen">
-      <Menu statut={statut} id={userId} />
-      <h1>Hello {firstName}</h1>
-      <h2>Ceci est la page d'accueil une fois connecté en tant que {statut}</h2>
-
-      <Logout email={email} />
+      //TODO component accueil
+      <Menu />
+      <h1>Hello</h1>
+      <h2>Ceci est la page d'accueil une fois connecté en tant que</h2>
+      <Logout />
     </div>
   );
 }

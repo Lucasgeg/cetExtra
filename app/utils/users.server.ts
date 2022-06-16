@@ -136,3 +136,17 @@ export const updateUser = async (id: string, form: UpdateForm) => {
 
   return json({ message: "Toto est au bout", validate: true, modify: false });
 };
+
+export const userMissions = async (id: string) => {
+  const today = new Date();
+
+  const futureMisions = await prisma.missions.findMany({
+    where: { userIDs: { has: id }, AND: { beginAt: { gte: today } } },
+    orderBy: { beginAt: "asc" },
+  });
+  const pastMissions = await prisma.missions.findMany({
+    where: { userIDs: { has: id }, AND: { beginAt: { lte: today } } },
+    orderBy: { beginAt: "asc" },
+  });
+  return { futureMisions, pastMissions };
+};

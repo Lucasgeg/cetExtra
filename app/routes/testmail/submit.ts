@@ -40,7 +40,7 @@ export default function handler(req: Req, res) {
   const sendGridMail = {
     to: email,
     from: "contact@lvp-web.fr",
-    templateId: "d-55310f6ba05a4d0fa87efce98dfc4a5b", // testform
+    templateId: "d-cad383b83a1a482690bf97c103aefc28",
     dynamic_template_data: {
       message: message,
       email: email,

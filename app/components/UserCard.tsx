@@ -1,4 +1,4 @@
-import { Form, Link } from "@remix-run/react";
+import { Form, Link, useLoaderData } from "@remix-run/react";
 
 type UserCardProps = {
   id: string;
@@ -10,51 +10,58 @@ type UserCardProps = {
   workedTime: number;
 };
 
-const UserCard = (user: UserCardProps) => {
-  const deleteSelectedUser = () => {
+const UserCard = (userInfo: UserCardProps) => {
+  const { userStatut } = useLoaderData();
+  const deleteValidation = async (e: React.FormEvent<HTMLFormElement>) => {
     const answer = prompt(
       "Merci de valider la suppression en écrivant le prénom de l'utilisateur à supprimer"
     );
-    if (!answer || answer !== user.firstName) {
+    if (!answer || answer !== userInfo.firstName) {
       alert("Erreur, pas suppression");
+      e.preventDefault();
       return false;
     }
   };
   return (
     <div
       className="userCard w-full md:w-48 bg-orange-200 flex flex-col mx-auto p-2"
-      key={user.id}
+      key={userInfo.id}
     >
       <div className="PhotoAFaire mx-auto w-20 h-20 bg-white rounded-full mb-5"></div>
       <div className="userInformation flex flex-col mx-auto text-center">
         <p>
-          {user.firstName} {user.lastName}
+          {userInfo.firstName} {userInfo.lastName}
         </p>
-        <p>{user.role}</p>
+        <p>{userInfo.role}</p>
 
         <div className="">
-          <Link to={`/userUpdate/${user.id}`}>
+          <Link to={`/userUpdate/${userInfo.id}`}>
             <button className="p-2 bg-red-400 border-2"> Modifier</button>
           </Link>
-          <Form method="post">
-            <input type="hidden" name="selectedUserId" value={user.id} />
+          <Form
+            method="post"
+            onSubmit={(e) => {
+              deleteValidation(e);
+            }}
+          >
+            <input type="hidden" name="selectedUserId" value={userInfo.id} />
             <input
               type="hidden"
               name="selectedUserFirstName"
-              value={user.firstName}
+              value={userInfo.firstName}
             />
-            <button
-              type="submit"
-              name="_action"
-              value={"delete"}
-              onClick={deleteSelectedUser}
-              className="p-2 bg-red-400 border-2"
-            >
-              Supprimer
-            </button>
+            {userStatut == "ADMIN" && (
+              <button
+                type="submit"
+                name="_action"
+                value={"delete"}
+                className="p-2 bg-red-400 border-2"
+              >
+                Supprimer
+              </button>
+            )}
           </Form>
         </div>
-        <div className="">Proposer un extra</div>
       </div>
     </div>
   );

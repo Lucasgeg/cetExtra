@@ -1,8 +1,11 @@
+import { useLoaderData } from "@remix-run/react";
+
 type PropsType = {
   email: string | null | undefined | boolean;
 };
 
-export function Logout({ email }: PropsType) {
+export function Logout() {
+  const { email } = useLoaderData<PropsType>();
   const action = email ? "logout" : "login";
   return (
     <div className="border-2 bg-red-400 p-3 rounded-xl lg:mb-1 w-28 h-[100px] mb-2 flex">
