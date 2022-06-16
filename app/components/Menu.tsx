@@ -1,13 +1,15 @@
 import type { Statut } from "@prisma/client";
-import { Link } from "@remix-run/react";
-type User = {
-  statut: Statut;
-  id: string;
+import { Link, useLoaderData } from "@remix-run/react";
+type LoaderData = {
+  userStatut: Statut;
+  userId: string;
 };
-const Menu = (user: User) => {
+const Menu = () => {
+  const { userId, userStatut } = useLoaderData<LoaderData>();
+
   return (
     <>
-      {user.statut !== "USER" ? (
+      {userStatut !== "USER" ? (
         <nav className="admin_Menu flex items-center w-full justify-around">
           <Link to={"/"} className="w-28 h-14 flex bg-orange-200 rounded-lg">
             <div className="m-auto">Accueil</div>
@@ -30,7 +32,10 @@ const Menu = (user: User) => {
           <Link to={"/"} className="w-28 h-14 flex bg-orange-200 rounded-lg">
             <div className="m-auto">Accueil</div>
           </Link>
-          <Link to={"/"} className="w-28 h-14 flex bg-orange-200 rounded-lg">
+          <Link
+            to={"/userroutes/missions"}
+            className="w-28 h-14 flex bg-orange-200 rounded-lg"
+          >
             <div className="m-auto">Mes Missions</div>
           </Link>
           <Link to={"/"} className="w-28 h-14 flex bg-orange-200 rounded-lg">
@@ -43,7 +48,7 @@ const Menu = (user: User) => {
             <div className="m-auto">Contact</div>
           </Link>
           <Link
-            to={`/userUpdate/${user.id}`}
+            to={`/userUpdate/${userId}`}
             className="w-28 h-14 flex bg-orange-200 rounded-lg"
           >
             <div className="m-auto">Profil</div>

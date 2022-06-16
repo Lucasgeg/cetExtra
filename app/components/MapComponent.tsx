@@ -38,7 +38,7 @@ type libraries = [
 
 const center = { lat: 48.41010665893555, lng: -4.455512046813965 };
 const zoom = 17;
-const mapContainerStyle = { width: "50vw", height: "50vh" };
+const mapContainerStyle = { width: "full", height: "50vh" };
 const library: libraries = ["places"];
 const options = {
   styles: mapStyle,

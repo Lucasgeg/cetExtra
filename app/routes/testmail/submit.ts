@@ -44,7 +44,7 @@ export default function handler(req: Req, res) {
   //création du mail
   const sendGridMail = {
     to: email,
-    from: "lucas.gegot.pro@gmail.com",
+    from: "contact@lvp-web.fr",
     templateId: "d-cad383b83a1a482690bf97c103aefc28",
     dynamic_template_data: {
       firstName: firstName,

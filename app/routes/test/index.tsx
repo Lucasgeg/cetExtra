@@ -1,17 +1,15 @@
-import type { LoaderFunction } from "@remix-run/node";
-import { Form } from "@remix-run/react";
+import { json, LoaderFunction, redirect } from "@remix-run/node";
 import React from "react";
-import LoginForm from "~/components/LoginForm";
-
+import { adminOnly } from "~/components/AdminAuthorize";
+import { getUser } from "~/utils/auth.server";
 export const loader: LoaderFunction = async ({ request }) => {
-  return true;
+  await adminOnly(request);
+  return json({ message: "toto" });
 };
-
 const index = () => {
   return (
     <div>
-      <h1>Formulaire d'inscription</h1>
-      <LoginForm />
+      <h1>Toto</h1>
     </div>
   );
 };

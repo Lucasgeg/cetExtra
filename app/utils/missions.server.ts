@@ -76,8 +76,15 @@ export const getMissions = async () => {
   return { futureMisions: futureMisions, pastMissions: pastMissions };
 };
 export const getMissionInformation = async (id: string) => {
-  if (!id) return json({ errorMessage: "Mission non trouvé" });
-  return await prisma.missions.findUnique({ where: { id } });
+  if (!id) return json({ error: "Mission non trouvé" });
+  return await prisma.missions.findUnique({
+    where: { id },
+    include: {
+      users: {
+        select: { lastName: true, firstName: true, id: true, email: true },
+      },
+    },
+  });
 };
 export const deleteMission = async (id: string) => {
   if (!id) return json({ errorMessage: "Mission non trouvé" });

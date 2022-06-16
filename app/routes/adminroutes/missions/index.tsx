@@ -13,32 +13,35 @@ type LoaderData = {
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request);
   if (!user) return redirect("/login");
-  if (user.statut !== "ADMIN") return redirect("/");
+  if (user.statut == "USER") return redirect("/");
   const userStatut = user.statut;
   return json({ userStatut });
 };
 
 const index = () => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { userStatut } = useLoaderData<LoaderData>();
   return (
-    <div className="w-full h-screen max-h-screen overflow-hidden">
-      <Menu statut={userStatut} />
+    <div className="h-screen">
+      <Menu />
       <h1>Hello Mission page!</h1>
-      <div className="flex justify-around h-full  ">
-        {userStatut == "ADMIN" ? (
-          <Link
-            to={"/adminroutes/missions/createMission"}
-            className="createMission flex justify-center items-center m-auto w-1/4 h-16 bg-orange-200 rounded-lg cursor-pointer"
-          >
-            Créer Mission
-          </Link>
-        ) : null}
+      <div className="h-5/6 flex flex-col justify-around">
+        <Link
+          to={"/adminroutes/missions/createMission"}
+          className="createMission flex justify-center items-center m-auto w-1/4 h-16 bg-orange-200 rounded-lg cursor-pointer"
+        >
+          Créer Mission
+        </Link>
+
         <Link
           to={"/adminroutes/missions/missionList"}
           className="seeMission flex justify-center items-center m-auto w-1/4 h-16 bg-orange-200 rounded-lg cursor-pointer"
         >
           Consulter
+        </Link>
+        <Link
+          to={"/adminroutes/inviterExtra"}
+          className="seeMission flex justify-center items-center m-auto w-1/4 h-16 bg-orange-200 rounded-lg cursor-pointer"
+        >
+          Inviter cetExtra
         </Link>
       </div>
     </div>
