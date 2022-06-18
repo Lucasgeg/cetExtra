@@ -20,6 +20,22 @@ type LoaderData = {
   missions: Missions[];
 };
 
+export const action: ActionFunction = async ({ request }) => {
+  //TODO recupérer les erreurs ou messages des fonctions
+  const form = await request.formData();
+  const action = form.get("_action");
+  const user = form.get("user");
+  const mission = form.get("mission");
+  switch (action) {
+    case "invite": {
+      return await sendPendingUserToMission(user, mission);
+    }
+    default: {
+      throw new Error("Error on the switch");
+    }
+  }
+};
+
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await getUser(request);
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -79,19 +95,3 @@ const index = () => {
 };
 
 export default index;
-
-export const action: ActionFunction = async ({ request }) => {
-  //TODO recupérer les erreurs ou messages des fonctions
-  const form = await request.formData();
-  const action = form.get("_action");
-  const user = form.get("user");
-  const mission = form.get("mission");
-  switch (action) {
-    case "invite": {
-      return await sendPendingUserToMission(user, mission);
-    }
-    default: {
-      throw new Error("Error on the switch");
-    }
-  }
-};

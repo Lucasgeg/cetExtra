@@ -94,7 +94,9 @@ const MissionList = () => {
                   <tr key={m.id}>
                     <td>{m.missionName}</td>
                     <td>{format(new Date(m.beginAt), "dd/MM/yyyy HH:mm")}</td>
-                    <td className="w-48 text-center">{m.place.split(",")}</td>
+                    <td className="w-48 text-center">
+                      {m.place.split(",").map((mis) => mis + "")}
+                    </td>
                     <td className="flex">
                       {
                         <Link

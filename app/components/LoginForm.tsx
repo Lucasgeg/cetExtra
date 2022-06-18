@@ -55,42 +55,6 @@ const LoginForm = () => {
         {...register("lastName", { required: true })}
       />{" "}
       <br />
-      {/* Email */}
-      <label htmlFor="email" className="label">
-        Email
-      </label>{" "}
-      <br />
-      <input
-        type="email"
-        placeholder="Email"
-        className="input"
-        {...register("email", { required: true })}
-      />{" "}
-      <br />
-      {/* password */}
-      <label htmlFor="password" className="label">
-        Password
-      </label>{" "}
-      <br />
-      <input
-        type="password"
-        placeholder=""
-        className="input"
-        {...register("password", { required: true })}
-      />{" "}
-      <br />
-      {/* Repeat passowrd */}
-      <label htmlFor="repeatPassword" className="label">
-        Repeat Password
-      </label>{" "}
-      <br />
-      <input
-        type="Password"
-        placeholder=""
-        className="input"
-        {...register("repeatPassword", { required: true })}
-      />{" "}
-      <br />
       {/* Birthday */}
       <label htmlFor="birthday" className="label">
         Date de naissance

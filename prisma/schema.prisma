@@ -23,15 +23,15 @@ model PendingUser {
 
 model User {
   id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  authId       String     @unique
   email        String     @unique
   firstName    String
   lastName     String
-  password     String
   birthday     String
-  birthCity    String
+  birthplace   String
   pendingToken String[]
   role         Role       @default(SALLE)
-  statut       Statut     @default(USER)
+  statut       Statut     @default(ADMIN)
   //mission relation many to many a faire plusieur user on la meme mission et vice verca
   missionIDs   String[]   @db.ObjectId
   missions     Missions[] @relation(fields: [missionIDs], references: [id])
