@@ -34,22 +34,6 @@ export const registerPending = async (user: RegisterForm) => {
   return { id: newUser.id, email: newUser.email };
 };
 
-export const createUser = async (user: RegisterForm) => {
-  const passwordHash = await bcrypt.hash(user.password, 10);
-
-  const newUser = await prisma.user.create({
-    data: {
-      email: user.email,
-      password: passwordHash,
-      birthday: user.birthday,
-      birthCity: user.birthCity,
-      firstName: user.firstName,
-      lastName: user.lastName,
-    },
-  });
-  return { id: newUser.id, email: newUser.email };
-};
-
 export const getUserList = async () => {
   return await prisma.user.findMany({
     select: {
@@ -66,22 +50,26 @@ export const getUserList = async () => {
 export const getUserInformation = async (id: string) => {
   const user = await prisma.user.findUnique({ where: { id } });
   if (!user) return json({ error: "User Not found" });
-  const userInfo = await prisma.user.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      birthCity: true,
-      birthday: true,
-      email: true,
-      firstName: true,
-      lastName: true,
-      role: true,
-      statut: true,
-      workedTime: true,
-      password: true,
-    },
-  });
-  return userInfo;
+
+  try {
+    const userInfo = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        birthplace: true,
+        birthday: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        statut: true,
+        workedTime: true,
+      },
+    });
+    return userInfo;
+  } catch (error) {
+    return error;
+  }
 };
 export const deleteUser = async (id: string) => {
   const user = await prisma.user.findUnique({
@@ -122,12 +110,11 @@ export const updateUser = async (id: string, form: UpdateForm) => {
   await prisma.user.update({
     where: { id },
     data: {
-      birthCity: form.birthCity || undefined,
+      birthplace: form.birthCity || undefined,
       birthday: form.birthday || undefined,
       email: form.email || undefined,
       firstName: form.firstName || undefined,
       lastName: form.lastName || undefined,
-      password: hashedPassword || undefined,
       role: form.role || undefined,
       statut: form.statut || undefined,
     },

@@ -10,13 +10,39 @@ type TypeData = {
   firstName: string;
   lastName: string;
 };
-export const getUser = async (request) => {
+export const getUserId = async (request) => {
   const { userId } = await getAuth(request);
   if (!userId) return null;
   return userId;
 };
-
-export const userIsNew = async (authId: string) => {
+export const getCurrentUser = async (request) => {
+  const authId = await getUserId(request);
+  if (!authId) return null;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { authId },
+      select: {
+        id: true,
+        email: true,
+        birthplace: true,
+        birthday: true,
+        firstName: true,
+        lastName: true,
+        missionIDs: true,
+        missions: true,
+        pendingToken: true,
+        role: true,
+        statut: true,
+        workedTime: true,
+      },
+    });
+    return user;
+  } catch (error) {
+    throw redirect("/sign-in");
+  }
+};
+export const userIsNew = async (request) => {
+  const authId = (await getAuth(request)).userId;
   const userIsNew = await prisma.user.findUnique({
     where: { authId },
   });
@@ -35,16 +61,19 @@ export const createNewUser = async (form: TypeData) => {
   const lastName = form.lastName.toLowerCase().trim();
   const birthplace = form.birthplace.toString().toLowerCase().trim();
   const birthday = form.birthday.toString().toLowerCase().trim();
+
   const validEmailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
   if (validEmailRegex.test(email) == false) {
     return json({ error: "Incorrect email format" });
+  }
+  if (!birthday || !birthplace) {
+    console.log("not created");
+    return;
   }
   const data = { email, authId, firstName, lastName, birthplace, birthday };
   const newUser = await prisma.user.create({
     data,
   });
-  if (!newUser) console.log("error");
-  console.log("success");
 
-  return json({ message: "User successfully created" });
+  return json({ newUser });
 };

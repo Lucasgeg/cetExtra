@@ -4,7 +4,7 @@ import {
   Marker,
   useLoadScript,
 } from "@react-google-maps/api";
-import { useLoaderData } from "@remix-run/react";
+import { useActionData, useLoaderData } from "@remix-run/react";
 import { useCallback, useRef, useState } from "react";
 import mapStyle from "./mapStyle";
 import usePlacesAutocomplete, {
@@ -78,6 +78,7 @@ const MapComponent = ({ formData, setFormData, search }: Data) => {
   const onMapLoad = useCallback((map) => {
     mapRef.current = map;
   }, []);
+  const actionData = useActionData();
   const panTo = useCallback(({ lat, lng }) => {
     if (!mapRef.current) return false;
     mapRef.current.panTo({ lat, lng });
@@ -89,7 +90,7 @@ const MapComponent = ({ formData, setFormData, search }: Data) => {
       {search ? (
         <Search panTo={panTo} formData={formData} setFormData={setFormData} />
       ) : null}
-
+      {actionData?.errorPlace && <p>Entrer une adresse précise</p>}
       <GoogleMap
         center={
           formData.lat ? { lat: formData.lat, lng: formData.lng } : center

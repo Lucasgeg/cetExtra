@@ -1,15 +1,18 @@
-import { json, LoaderFunction, redirect } from "@remix-run/node";
+import { LoaderFunction } from "@remix-run/node";
 import React from "react";
-import { adminOnly } from "~/components/AdminAuthorize";
-import { getUser } from "~/utils/auth.server";
-export const loader: LoaderFunction = async ({ request }) => {
-  await adminOnly(request);
-  return json({ message: "toto" });
+import { toto } from "./testSubmit";
+
+export const loader: LoaderFunction = async () => {
+  const bobo = await toto("bobo");
+  console.log(bobo);
+
+  return true;
 };
+
 const index = () => {
   return (
     <div>
-      <h1>Toto</h1>
+      <h1>toto</h1>
     </div>
   );
 };

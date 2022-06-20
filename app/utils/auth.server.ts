@@ -1,6 +1,5 @@
 import { createCookieSessionStorage, json, redirect } from "@remix-run/node";
 import { prisma } from "./prisma.server";
-import { createUser } from "./users.server";
 import bcrypt from "bcryptjs";
 const token = process.env.TOKEN_SECRET;
 if (!token) {
@@ -67,7 +66,7 @@ export async function getUser(request: Request) {
       select: {
         id: true,
         email: true,
-        birthCity: true,
+        birthplace: true,
         birthday: true,
         firstName: true,
         lastName: true,
@@ -93,7 +92,7 @@ export async function logout(request: Request) {
   });
 }
 
-export const register = async (form: RegisterForm) => {
+/* export const register = async (form: RegisterForm) => {
   const email = form.email.toString().toLowerCase().trim();
   const password = form.password.toString().trim();
   const validatePassword = form.validatePassword.toString().trim();
@@ -131,8 +130,8 @@ export const register = async (form: RegisterForm) => {
   }
   return createUserSession(newUser.id, "/");
   //return json({ error: "Check you mail for validation" });
-};
-export const login = async (form: LoginForm) => {
+}; */
+/* export const login = async (form: LoginForm) => {
   const userEmail = form.email.toLowerCase().trim();
   const userIsPending = await prisma.pendingUser.findUnique({
     where: { email: userEmail },
@@ -145,4 +144,4 @@ export const login = async (form: LoginForm) => {
     return json({ error: "Invalid username or password" }, { status: 400 });
   }
   return createUserSession(user.id, "/");
-};
+}; */

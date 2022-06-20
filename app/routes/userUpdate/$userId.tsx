@@ -5,7 +5,7 @@ import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
-import { getUserId } from "~/utils/auth.server";
+import { getCurrentUser } from "~/utils/newAuth.server";
 import { getUserInformation, updateUser } from "~/utils/users.server";
 
 type User = {
@@ -16,7 +16,7 @@ type User = {
   role: Role;
   statut: Statut;
   birthday: string | null;
-  birthCity: string | null;
+  birthplace: string | null;
   workedTime: number | null;
   password: string | null;
   validatePassword: string | null;
@@ -33,7 +33,7 @@ export const action: ActionFunction = async ({ request }) => {
   let firstName = form.get("firstName");
   let lastName = form.get("lastName");
   let birthday = form.get("birthday");
-  let birthCity = form.get("birthCity");
+  let birthplace = form.get("birthplace");
   let role = form.get("role");
   let statut = Number(form.get("statut"));
   let password = form.get("password");
@@ -43,7 +43,7 @@ export const action: ActionFunction = async ({ request }) => {
     email,
     firstName,
     lastName,
-    birthCity,
+    birthplace,
     birthday,
     role,
     statut,
@@ -59,7 +59,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const userId = params.userId;
-  const consultingUserId = await getUserId(request);
+  const consultingUserId = (await getCurrentUser(request)).id;
   if (!userId) return json({ error: "No user Information here" });
   const userInfo = await getUserInformation(userId);
 
@@ -67,19 +67,20 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 };
 
 export default function userUpdate() {
+  //TODO tableau liste des prochaines missions
   const data = useActionData();
 
-  const [passType, setPassType] = useState("password");
+  /*  const [passType, setPassType] = useState("password");
   const [validatePassType, setValidatePassType] = useState("password");
   const changeValidPassType = () => {
     validatePassType == "password"
       ? setValidatePassType("text")
       : setValidatePassType("password");
-  };
+  }; 
   const changePassType = () => {
     passType == "password" ? setPassType("text") : setPassType("password");
-  };
-  const { user, consultingUserId } = useLoaderData<LoaderData>();
+  };*/
+  const { user } = useLoaderData<LoaderData>();
   const handleModify = () => {
     setModify(!modify);
   };
@@ -93,16 +94,13 @@ export default function userUpdate() {
   };
   const [modify, setModify] = useState(false);
   const [formData, setFormData] = useState({
-    email: user.email,
     firstName: user.firstName,
     lastName: user.lastName,
     birthday: user.birthday,
-    birthCity: user.birthCity,
+    birthplace: user.birthplace,
     workedTime: user.workedTime,
     role: user.role,
     statut: user.statut,
-    password: undefined,
-    validatePassword: undefined,
   });
   const rolesArray = Object.keys(Role) as (keyof typeof Role)[];
   const statutArray = Object.keys(Statut) as (keyof typeof Statut)[];
@@ -127,7 +125,7 @@ export default function userUpdate() {
               Date de naissance: <span> {user.birthday} </span>
             </h2>
             <h2>
-              Ville de naissance: <span> {user.birthCity} </span>{" "}
+              Ville de naissance: <span> {user.birthplace} </span>{" "}
             </h2>
             <h2>
               Role: <span>{user.role.toLowerCase()}</span>
@@ -148,7 +146,7 @@ export default function userUpdate() {
             <Form method="post">
               <label htmlFor="email">Email</label>
               <br />
-              <input
+              {/*  <input
                 className="w-44"
                 type="text"
                 name="email"
@@ -191,7 +189,7 @@ export default function userUpdate() {
                     👁️{" "}
                   </span>
                 </>
-              ) : null}
+              ) : null} */}
               <br />
               <label htmlFor="firstName">Prénom</label>
               <br />
@@ -224,15 +222,15 @@ export default function userUpdate() {
                 onChange={(e) => handleInputChange(e, "birthday")}
               />{" "}
               <br />
-              <label htmlFor="birthCity">Birth City</label>
+              <label htmlFor="birthplace">Birth City</label>
               <br />
               <input
                 className="w-44"
                 required={true}
                 type="text"
-                name="birthCity"
-                value={formData.birthCity ? formData.birthCity : ""}
-                onChange={(e) => handleInputChange(e, "birthCity")}
+                name="birthplace"
+                value={formData.birthplace ? formData.birthplace : ""}
+                onChange={(e) => handleInputChange(e, "birthplace")}
               />{" "}
               <br />
               {user.statut !== "USER" ? (

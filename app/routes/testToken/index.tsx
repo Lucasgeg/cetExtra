@@ -4,6 +4,7 @@ import { Form, useLoaderData } from "@remix-run/react";
 import React, { useState } from "react";
 import { getUser } from "~/utils/auth.server";
 import { getMissions } from "~/utils/missions.server";
+import { getCurrentUser } from "~/utils/newAuth.server";
 import type { Missions } from "~/utils/prisma.server";
 import {
   connectToMission,
@@ -24,7 +25,7 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const user = await getUser(request);
+  const user = await getCurrentUser(request);
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   user?.statut !== "ADMIN" ? redirect("/") : null;
   const missions = (await getMissions()).futureMisions;

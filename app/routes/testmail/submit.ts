@@ -1,8 +1,8 @@
 import sgMail from "@sendgrid/mail";
-import crypto from "crypto";
 type Body = {
   email: string;
   message: string;
+  token: string;
 };
 
 type Req = {
@@ -16,7 +16,7 @@ export default function handler(req: Req, res) {
     res.status(405).json({ message: "INVALID_METHOD" });
     return;
   }
-  const { email, message } = req.body;
+  const { token, email, message } = req.body;
   if (!message || !email) {
     res.status(400).json({ message: "INVALID_PARAMETER" });
     return;
@@ -32,9 +32,6 @@ export default function handler(req: Req, res) {
   }
 
   sgMail.setApiKey(process.env.KEY_SENDGRID);
-
-  const token = crypto.randomBytes(16).toString("hex");
-  console.log(token);
 
   //création du mail
   const sendGridMail = {

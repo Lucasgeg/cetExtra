@@ -1,30 +1,14 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
 import Menu from "~/components/Menu";
-import UserCard from "~/components/UserCard";
 import UserList from "~/components/UserList";
-import { getUser } from "~/utils/auth.server";
+import { getCurrentUser } from "~/utils/newAuth.server";
 import { deleteUser, getUserList } from "~/utils/users.server";
-
-type Users = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: number;
-  statut: number;
-  workedTime: number;
-};
-type LoaderData = {
-  users: Users[];
-};
 
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
   const selectedUserId = form.get("selectedUserId");
   const action = form.get("_action");
-  const selectedUserFirstName = form.get("selectedUserFirstName");
 
   switch (action) {
     case "delete": {
@@ -39,7 +23,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const user = await getUser(request);
+  const user = await getCurrentUser(request);
   const userStatut = user.statut;
   if (userStatut == "USER") return redirect("/");
 

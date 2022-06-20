@@ -5,14 +5,16 @@ import { redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import Menu from "~/components/Menu";
 import { getUser } from "~/utils/auth.server";
+import { getCurrentUser } from "~/utils/newAuth.server";
 
 type LoaderData = {
   userStatut: string;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const user = await getUser(request);
-  if (!user) return redirect("/login");
+  const user = await getCurrentUser(request);
+
+  if (!user) return redirect("/");
   if (user.statut == "USER") return redirect("/");
   const userStatut = user.statut;
   return json({ userStatut });

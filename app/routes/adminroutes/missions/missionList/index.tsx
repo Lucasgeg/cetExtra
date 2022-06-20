@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import { useState } from "react";
 import Menu from "~/components/Menu";
 import MissionList from "~/components/MissionList";
+import { getCurrentUser } from "~/utils/newAuth.server";
 
 type Missions = {
   missionName: string;
@@ -25,7 +26,7 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const user = await getUser(request);
+  const user = await getCurrentUser(request);
 
   if (!user || user.statut == "USER") return redirect("/");
   const userId = user.id;

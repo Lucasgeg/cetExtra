@@ -1,12 +1,10 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form } from "@remix-run/react";
-import MapComponent from "~/components/MapComponent";
-import { getUser } from "~/utils/auth.server";
 import { createMission } from "~/utils/missions.server";
 import "@reach/combobox/styles.css";
 import Menu from "~/components/Menu";
 import CreateMissionForm from "~/components/CreateMissionForm";
+import { getCurrentUser } from "~/utils/newAuth.server";
 
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
@@ -34,7 +32,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const user = await getUser(request);
+  const user = await getCurrentUser(request);
   if (!user) return redirect("/login");
   if (user.statut !== "ADMIN") return redirect("/");
   const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;

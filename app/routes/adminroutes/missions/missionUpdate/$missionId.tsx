@@ -6,8 +6,8 @@ import { format } from "date-fns";
 import { useState } from "react";
 import MapComponent from "~/components/MapComponent";
 import Menu from "~/components/Menu";
-import { getUser } from "~/utils/auth.server";
 import { getMissionInformation, updateMission } from "~/utils/missions.server";
+import { getCurrentUser } from "~/utils/newAuth.server";
 import { disconnectToMission } from "~/utils/userMissions.server";
 
 type Mission = {
@@ -39,9 +39,10 @@ type LoaderData = {
 export const loader: LoaderFunction = async ({ params, request }) => {
   const missionId = params.missionId;
   if (!missionId) return redirect("/routes/adminroutes/missionList");
-  const consultingUser = await getUser(request);
+  const consultingUser = await getCurrentUser(request);
   const userStatut = consultingUser.statut;
   const mission = await getMissionInformation(missionId);
+
   if (consultingUser?.statut == "USER") return redirect("/");
   const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
   if (!apiKey) return console.log("ApiKey is Needed!");
@@ -110,6 +111,7 @@ const $missionId = () => {
       return false;
     }
   };
+
   const [formData, setFormData] = useState({
     id: mission.id,
     missionName: mission.missionName,
@@ -173,6 +175,7 @@ const $missionId = () => {
               value={formData.place}
               onChange={(e) => handleInputChange(e, "place")}
             /> */}
+                ;
                 <button type="submit" name="_action" value={"update"}>
                   Valider
                 </button>

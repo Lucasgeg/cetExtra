@@ -3,6 +3,7 @@ import { json, redirect } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import React, { useState } from "react";
 import ExtraInvitForm from "~/components/ExtraInvitForm";
+import Menu from "~/components/Menu";
 import { getUser } from "~/utils/auth.server";
 import { getMissions } from "~/utils/missions.server";
 import type { Missions } from "~/utils/prisma.server";
@@ -52,8 +53,9 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 };
 const index = () => {
   return (
-    //TODO mapping user by workedTime et select role en partie gauche partie droite select mission avec carte (directement carte avec marker des future mission?)
+    //TODO mapping user by workedTime et select role en partie gauche + possibilité d'en sélectionner plusieurs partie droite select mission avec carte (directement carte avec marker des future mission?)
     <div>
+      <Menu />
       <h1>Formulaire de connection d'un utilisateur</h1>
       <ExtraInvitForm />
       {/* <Form method="post">

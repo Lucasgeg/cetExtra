@@ -4,6 +4,7 @@ import { json, redirect } from "@remix-run/node";
 import Menu from "~/components/Menu";
 import MissionList from "~/components/MissionList";
 import { getUser } from "~/utils/auth.server";
+import { getCurrentUser } from "~/utils/newAuth.server";
 import { userMissions } from "~/utils/users.server";
 
 type LoaderData = {
@@ -17,8 +18,8 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const user = await getUser(request);
-  if (!user) return redirect("/login");
+  const user = await getCurrentUser(request);
+  if (!user) return redirect("/");
   ///userInfos///
   const userId = user?.id;
   const userEmail = user?.email;

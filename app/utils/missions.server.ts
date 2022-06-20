@@ -1,4 +1,4 @@
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { prisma } from "./prisma.server";
 
 type CreateForm = {
@@ -27,8 +27,6 @@ export const getDifference = (start: Date, end: Date) => {
   };
 };
 export const createMission = async (form: CreateForm) => {
-  console.log(typeof form.lat);
-
   //error
   if (form.missionName.length < 4)
     return json({ errorName: "Le nom doit faire minimum 4 lettres" });
@@ -53,11 +51,11 @@ export const createMission = async (form: CreateForm) => {
     data: { ...form, duration, beginAt, endAt },
   });
 
-  if (!createdMission)
-    return json({ errorCreation: "Erreur lors de la création de la mission" });
+  if (!createdMission) return false;
+
   console.log("toto à réussi a créer la mission!");
   //redirect mission plus message
-  return json({ message: "Mission créer avec succès" });
+  throw redirect("/adminroutes/missions");
 };
 export const getMissions = async () => {
   const today = new Date();

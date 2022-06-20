@@ -2,9 +2,32 @@ import { useUser } from "@clerk/remix";
 import { rootAuthLoader } from "@clerk/remix/ssr.server";
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { Form } from "@remix-run/react";
+import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
-import { createNewUser } from "~/utils/newAuth.server";
+import { createNewUser, userIsNew } from "~/utils/newAuth.server";
+
+const birthdayValid = (birthday: string) => {
+  if (!birthday) return "Birthday must be set";
+};
+const birthplaceValid = (birthplace: string) => {
+  if (!birthplace) return "Birthplace must be set";
+};
+
+type ActionData = {
+  formError?: string;
+  fieldErrors?: {
+    birthday: string;
+    birthplace: string;
+  };
+  fields?: {
+    birthday: string;
+    birthplace: string;
+  };
+};
+
+const badRequest = (data: ActionData) => {
+  return json(data, { status: 400 });
+};
 
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
@@ -14,7 +37,6 @@ export const action: ActionFunction = async ({ request }) => {
   const birthplace = form.get("birthplace");
   const email = form.get("email");
   const authId = form.get("authId");
-  console.log(firstName, lastName, birthday, birthplace, email);
 
   if (
     typeof firstName !== "string" ||
@@ -23,20 +45,35 @@ export const action: ActionFunction = async ({ request }) => {
     typeof birthplace !== "string" ||
     typeof email !== "string" ||
     typeof authId !== "string"
-  )
-    throw new Error("type Error");
-  const data = { firstName, lastName, birthday, birthplace, email, authId };
-  return await createNewUser(data)
-    .then((value) => {
-      console.log(value);
-      return json({ value });
-    })
-    .catch((error) => {
-      console.log(error);
-      return json({ error });
+  ) {
+    return badRequest({
+      formError: "Form is not correctly submitted",
     });
-};
+  }
+  const fieldErrors = {
+    birthday: birthdayValid(birthday),
+    birthplace: birthplaceValid(birthplace),
+  };
+  const fields = { birthday, birthplace };
+  if (Object.values(fieldErrors).some(Boolean)) {
+    return badRequest({ fieldErrors, fields });
+  }
+  const data = { firstName, lastName, birthday, birthplace, email, authId };
 
+  try {
+    const userIsCreated = await createNewUser(data);
+    if (!userIsCreated) throw new Error("User can't be created");
+    return redirect("/");
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+export const loader: LoaderFunction = async ({ request }) => {
+  const isNew = await userIsNew(request);
+  if (!isNew) return redirect("/");
+  return null;
+};
 export default function index() {
   //useHook on components
   return (
@@ -54,6 +91,7 @@ export default function index() {
 const FirstConnectForm = () => {
   //récup info avec useUser
   const user = useUser().user;
+  const actionData = useActionData<ActionData>();
 
   const [formData, setFormData] = useState({
     firstName: user.firstName && user.firstName,
@@ -84,7 +122,7 @@ const FirstConnectForm = () => {
           value={formData.firstName}
           name={"firstName"}
           onChange={(e) => handleInputChange(e, "firstname")}
-        />{" "}
+        />
         <br />
         {/* Last Name */}
         <label htmlFor="lastName" className="label">
@@ -112,8 +150,11 @@ const FirstConnectForm = () => {
           name="birthday"
           value={formData.birthday}
           onChange={(e) => handleInputChange(e, "birthday")}
-        />{" "}
+        />
         <br />
+        {actionData?.fieldErrors?.birthplace && (
+          <p>{actionData.fieldErrors.birthplace}</p>
+        )}
         <label htmlFor="birthPlace">Lieu de naissance</label>
         <br />
         <input
@@ -124,6 +165,10 @@ const FirstConnectForm = () => {
           value={formData.birthplace}
           onChange={(e) => handleInputChange(e, "birthplace")}
         />
+        <br />
+        {actionData?.fieldErrors?.birthplace && (
+          <p>{actionData.fieldErrors.birthplace}</p>
+        )}
         <input type="hidden" name="email" value={formData.email} />
         <input type="hidden" name="authId" value={formData.authId} />
         <div className="text-right">
