@@ -1,15 +1,12 @@
 import { LoaderFunction } from "@remix-run/node";
-import React from "react";
-import { toto } from "./testSubmit";
 
-export const loader: LoaderFunction = async () => {
-  const bobo = await toto("bobo");
-  console.log(bobo);
-
+export const loader: LoaderFunction = async ({ request }) => {
   return true;
 };
 
-const index = () => {
+const index = async (test) => {
+  console.log(test);
+
   return (
     <div>
       <h1>toto</h1>

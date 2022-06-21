@@ -1,5 +1,6 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
+import Footer from "~/components/Footer";
 import Menu from "~/components/Menu";
 import UserList from "~/components/UserList";
 import { getCurrentUser } from "~/utils/newAuth.server";
@@ -34,17 +35,18 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 const usersList = () => {
   return (
-    <>
+    <div className="h-screen max-h-screen overflow-hidden">
       <Menu />
-      <div className="min-h-screen">
-        <h1 className="text-3xl text-center">Hello UserList</h1>
-        <div className="main w-full flex ">
-          <div className="rightPart w-2/3 p-5 border-2 mx-auto">
+      <div className="">
+        <h1 className="text-3xl text-center my-4">Liste des utilisateurs</h1>
+        <div className="main w-full flex">
+          <div className="rightPart w-full p-5 mx-auto bg-orange-200 overflow-auto">
             <UserList />
           </div>
         </div>
       </div>
-    </>
+      <Footer />
+    </div>
   );
 };
 

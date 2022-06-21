@@ -57,7 +57,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 //////////////////////////ACTION FUNCTION//////////////////////////
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
-  const id = form.get("missionId");
+  const id = form.get("missionId").toString();
   const missionName = form.get("missionName");
   const beginAt = form.get("beginAt");
   const endAt = form.get("endAt");
@@ -65,7 +65,7 @@ export const action: ActionFunction = async ({ request }) => {
   const lat = +form.get("lat");
   const lng = +form.get("lng");
   const action = form.get("_action");
-  const userEmail = form.get("userId");
+  const userEmail = form.get("userId").toString();
   switch (action) {
     case "update": {
       try {
@@ -212,7 +212,6 @@ const $missionId = () => {
           )}
         </div>
         <div className="w-1/2">
-          <p>Liste des extras:</p>
           <table className="w-1/2 mx-auto">
             <thead>
               <tr>
@@ -257,6 +256,13 @@ const $missionId = () => {
                 </tr>
               ))}
             </tbody>
+            <tfoot>
+              <tr>
+                <th colSpan={2}>
+                  <Link to={"/adminroutes/inviterextra/"}>Inviter extra</Link>
+                </th>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>

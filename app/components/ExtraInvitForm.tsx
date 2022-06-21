@@ -58,8 +58,14 @@ const ExtraInvitForm = () => {
         ))}
       </select>
       <br />
-      <button type="submit" name="_action" value={"invite"}>
-        proposer extra
+      <button
+        type="submit"
+        name="_action"
+        value={"invite"}
+        className="p-3 bg-slate-400 rounded-lg hover:bg-orange-200 my-1"
+      >
+        Inviter <br />
+        cet Extra!
       </button>
     </Form>
   );

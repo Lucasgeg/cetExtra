@@ -14,7 +14,6 @@ type UpdateForm = {
   birthday?: string | undefined;
   birthCity?: string | undefined;
   role?: Role | undefined;
-
   statut?: Statut | undefined;
 };
 
@@ -136,4 +135,13 @@ export const userMissions = async (id: string) => {
     orderBy: { beginAt: "asc" },
   });
   return { futureMisions, pastMissions };
+};
+
+export const getUserNextMission = async (id: string) => {
+  const today = new Date();
+  const nextMission = await prisma.user.findUnique({
+    where: { id },
+    include: { missions: { where: { beginAt: { gte: today } } } },
+  });
+  return nextMission;
 };

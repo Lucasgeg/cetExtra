@@ -3,6 +3,7 @@ import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
+import Footer from "~/components/Footer";
 import Menu from "~/components/Menu";
 import { getUser } from "~/utils/auth.server";
 import { getCurrentUser } from "~/utils/newAuth.server";
@@ -22,9 +23,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 const index = () => {
   return (
-    <div className="h-screen">
+    <div className="h-screen overflow-auto">
       <Menu />
-      <h1>Hello Mission page!</h1>
       <div className="h-5/6 flex flex-col justify-around">
         <Link
           to={"/adminroutes/missions/createMission"}
@@ -46,6 +46,7 @@ const index = () => {
           Inviter cetExtra
         </Link>
       </div>
+      <Footer />
     </div>
   );
 };

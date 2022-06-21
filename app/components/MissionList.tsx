@@ -33,10 +33,20 @@ const MissionList = () => {
   const [toPastMission, setToPastMission] = useState(false);
   return (
     <>
-      <button onClick={() => setToPastMission(!toPastMission)}>
-        {toPastMission ? "Prochaines missions" : "Missions passée"}
-      </button>
-      <table className="border-2 border-black mx-auto w-5/6 bg-slate-300">
+      <div className="flex w-1/4 justify-around">
+        <button
+          onClick={() => setToPastMission(!toPastMission)}
+          className="p-3 bg-slate-400 rounded-lg  hover:bg-orange-200"
+        >
+          {toPastMission ? "Prochaines missions" : "Missions passée"}
+        </button>
+        <button className="p-3 bg-slate-400 rounded-lg  hover:bg-orange-200">
+          <Link to={"/adminroutes/missions/createMission"}>
+            Créer une mission
+          </Link>
+        </button>
+      </div>
+      <table className="border-2 border-black mx-auto w-5/6 bg-slate-300 mt-2">
         <thead className="border-2 border-black">
           <tr>
             <th colSpan={4}>
@@ -59,12 +69,12 @@ const MissionList = () => {
                 (m) => (
                   <tr key={m.id} className="border-2 border-black">
                     <td>{m.missionName}</td>
-                    <td>{format(new Date(m.beginAt), "MM/dd/yyyy HH:mm")}</td>
+                    <td>{format(new Date(m.beginAt), "dd/MM/yyyy HH:mm")}</td>
                     <td className="">{m.place}</td>
                     <td className="flex items-center justify-center">
                       <div className=" m-auto">
                         <Link
-                          to={`/adminroutes/missions/missionUpdate/${m.id}`}
+                          to={`/adminroutes/missions/mission-information/${m.id}`}
                         >
                           👁️
                         </Link>
@@ -100,7 +110,7 @@ const MissionList = () => {
                     <td className="flex">
                       {
                         <Link
-                          to={`/adminroutes/missions/missionUpdate/${m.id}`}
+                          to={`/adminroutes/missions/mission-information/${m.id}`}
                         >
                           👁️
                         </Link>
@@ -126,6 +136,17 @@ const MissionList = () => {
             </>
           )}
         </tbody>
+        <tfoot>
+          <tr>
+            <td colSpan={4} className="text-center">
+              <button className="p-3 bg-slate-400 rounded-lg hover:bg-orange-200 my-1">
+                <Link to={"/adminroutes/missions/createMission"}>
+                  Créer une mission
+                </Link>
+              </button>
+            </td>
+          </tr>
+        </tfoot>
       </table>
     </>
   );

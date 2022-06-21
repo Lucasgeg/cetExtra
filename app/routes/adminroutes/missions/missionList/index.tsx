@@ -64,13 +64,8 @@ const index = () => {
     <div className="h-screen">
       <Menu />
       <div className="w-full">
-        <h1>Hello Mission List Page</h1>
+        <h1 className="text-center text-2xl my-2">cet Extra! Missions</h1>
         <MissionList />
-        <button>
-          <Link to={"/adminroutes/missions/createMission"}>
-            Créer une mission
-          </Link>
-        </button>
       </div>
     </div>
   );

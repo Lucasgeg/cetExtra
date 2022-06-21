@@ -1,8 +1,9 @@
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { Missions, prisma } from "./prisma.server";
 import crypto from "crypto";
 import { getMissionInformation } from "./missions.server";
 import sgMail from "@sendgrid/mail";
+import { format } from "date-fns";
 
 type pendingUserToMission = {
   usermail: string;
@@ -27,7 +28,7 @@ const sendMail = (
   token: string,
   missionName: string,
   missionPlace: string,
-  missionDate: Date
+  missionDate: string
 ) => {
   if (!email || !token) {
     return json({ message: "INVALID_PARAMETER" });
@@ -65,7 +66,10 @@ const sendMail = (
     }
   })();
 };
-export const sendPendingUserToMission = async (user, mission) => {
+export const sendPendingUserToMission = async (
+  user: string,
+  mission: string
+) => {
   const token = crypto.randomBytes(16).toString("hex");
   //verif si mission déjà proposé
   if (typeof user !== "string") return;
@@ -91,21 +95,65 @@ export const sendPendingUserToMission = async (user, mission) => {
   });
   const missionName = missionInfos.missionName;
   const missionPlace = missionInfos.place;
-  const missionDate = missionInfos.beginAt;
+  const missionDate = format(
+    new Date(missionInfos.beginAt),
+    "dd/MM/yyyy à HH:mm"
+  );
 
   //send mail to user
   sendMail(user, userFirstName, token, missionName, missionPlace, missionDate);
   return json({ message: "Invitation sended" });
 };
-export const getMissionByToken = async (token) => {
-  const mission = await prisma.pendingUserToMission.findUnique({
+export const getMissionByToken = async (token: string) => {
+  const pendingMission = await prisma.pendingUserToMission.findUnique({
     where: { token },
   });
-  if (!mission) return json({ message: "Mission not found" });
-  const missionId = mission.missionId;
-  return await getMissionInformation(missionId);
+  if (!pendingMission) return false;
+  const missionId = pendingMission.missionId;
+  const mission = await prisma.missions.findUnique({
+    where: { id: missionId },
+    select: { missionName: true, place: true, beginAt: true, id: true },
+  });
+  return mission;
 };
-export const validateMissionToken = async (userMail, token) => {
+export const validateMissionToken = async (userMail: string, token: string) => {
+  //est ce que l'user avec le mail Usermail à le token?
+  const haveTheToken = await prisma.user.findMany({
+    where: { email: userMail, AND: { pendingToken: { has: token } } },
+    select: { pendingToken: true },
+  });
+  if (!haveTheToken.length) return json({ message: "not found", status: 404 });
+  console.log("token founded");
+
+  const userTokenRes = await prisma.user.findUnique({
+    where: { email: userMail },
+    select: { pendingToken: true },
+  });
+  const userPendingTokenArrayPullUsedToken =
+    userTokenRes.pendingToken &&
+    userTokenRes.pendingToken.filter((tokens) => tokens !== token);
+
+  const pendingUserToMission = await prisma.pendingUserToMission.findFirst({
+    where: { userMail, AND: { token } },
+  });
+  await connectToMission(
+    pendingUserToMission.userMail,
+    pendingUserToMission.missionId
+  );
+  await prisma.user.update({
+    where: { email: userMail },
+    data: { pendingToken: { set: userPendingTokenArrayPullUsedToken } },
+  });
+  await prisma.pendingUserToMission.delete({
+    where: { token },
+  });
+  console.log("User is now connected");
+
+  //redirect validatePage avec mission
+  return "toto";
+};
+const validateRedirect = async (mission) => {};
+export const refuseMissionToken = async (userMail: string, token: string) => {
   const haveTheToken = await prisma.user.findMany({
     where: { email: userMail, AND: { pendingToken: { has: token } } },
     select: { pendingToken: true },
@@ -120,13 +168,6 @@ export const validateMissionToken = async (userMail, token) => {
 
   if (!haveTheToken.length) return json({ message: "not found", status: 404 });
   console.log("token founded");
-  const pendingUserToMission = await prisma.pendingUserToMission.findFirst({
-    where: { userMail, AND: { token } },
-  });
-  await connectToMission(
-    pendingUserToMission.userMail,
-    pendingUserToMission.missionId
-  );
   await prisma.user.update({
     where: { email: userMail },
     data: { pendingToken: userPendingTokenArrayPullUsedToken },
@@ -134,12 +175,11 @@ export const validateMissionToken = async (userMail, token) => {
   await prisma.pendingUserToMission.delete({
     where: { token },
   });
-  console.log("User is now connected");
+  console.log("User not connected and deleted from pendingList");
 
-  return json({ message: "User is now connected" });
+  return json({ message: "User not connected and deleted from pendingList" });
 };
-
-export const connectToMission = async (user, mission) => {
+export const connectToMission = async (user: string, mission: string) => {
   const userToConnect = await prisma.user.findUnique({
     where: { email: user },
   });
@@ -159,7 +199,7 @@ export const connectToMission = async (user, mission) => {
   return json({ message: "User connected to the mission" });
 };
 
-export const disconnectToMission = async (user, mission) => {
+export const disconnectToMission = async (user: string, mission: string) => {
   const userToConnect = await prisma.user.findUnique({
     where: { email: user },
   });

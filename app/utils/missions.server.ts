@@ -75,7 +75,7 @@ export const getMissions = async () => {
 };
 export const getMissionInformation = async (id: string) => {
   if (!id) return json({ error: "Mission non trouvé" });
-  return await prisma.missions.findUnique({
+  const mission = await prisma.missions.findUnique({
     where: { id },
     include: {
       users: {
@@ -83,11 +83,16 @@ export const getMissionInformation = async (id: string) => {
       },
     },
   });
+  return mission;
 };
 export const deleteMission = async (id: string) => {
   if (!id) return json({ errorMessage: "Mission non trouvé" });
-  console.log("Toto à bien supprimé!");
-  return await prisma.missions.delete({ where: { id } });
+  await deleteUsersOnTheMission(id);
+  await prisma.missions.delete({ where: { id } });
+
+  return json("Mission deleted successfully", {
+    status: 200,
+  });
 };
 export const updateMission = async (id: string, updateForm: UpdateForm) => {
   const mission = await prisma.missions.findUnique({ where: { id } });
@@ -107,4 +112,30 @@ export const updateMission = async (id: string, updateForm: UpdateForm) => {
   });
   console.log("Toto à modifier la mission!");
   return { message: "Toto à réussi la modif!" };
+};
+export const deleteUsersOnTheMission = async (id: string) => {
+  const usersOnTheMission = await prisma.user.findMany({
+    where: { missionIDs: { has: id } },
+    select: { missionIDs: true, email: true },
+  });
+  usersOnTheMission.map(async (user) => {
+    const userMissionsIdsWithoutThisMission =
+      user.missionIDs && user.missionIDs.filter((ids) => ids !== id);
+    console.log(user.email);
+    console.log("userMissions " + user.missionIDs);
+    console.log(
+      "userMissions - mission a retiré: " + userMissionsIdsWithoutThisMission
+    );
+
+    console.log("toto retire la missionId de chaque user");
+
+    const update = await prisma.user.update({
+      where: { email: user.email },
+      data: { missionIDs: { set: userMissionsIdsWithoutThisMission } },
+    });
+    console.log(update);
+    return update;
+  });
+
+  return "toto";
 };

@@ -1,21 +1,13 @@
+import { Missions } from "@prisma/client";
 import type { LoaderFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import { format } from "date-fns";
 import Menu from "~/components/Menu";
 import { getCurrentUser } from "~/utils/newAuth.server";
 import {
   getMissionByToken,
-  validateMissionToken,
+  refuseMissionToken,
 } from "~/utils/userMissions.server";
-import Validate from "~/routes/valid-mission/validate";
-
-type Mission = {
-  id: string;
-  missionName: string;
-  place: string;
-  beginAt: string;
-};
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const token = params.token;
@@ -24,8 +16,14 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   if (!user) return redirect("/");
 
   const mission = await getMissionByToken(token);
-  await validateMissionToken(user.email, token);
-  return mission;
+  if (!mission) return redirect("/");
+
+  try {
+    const refuseMission = await refuseMissionToken(user.email, token);
+    return json({ refuseMission });
+  } catch (error) {
+    return json({ error });
+  }
 };
 
 const $token = () => {
@@ -41,19 +39,15 @@ const $token = () => {
 export default $token;
 
 const Message = () => {
-  const mission: Mission = useLoaderData();
+  const { mission } = useLoaderData();
 
   return (
     <div className="">
       {mission.id ? (
         <>
-          <h1>Vous êtes maintenant connecté a la mission:</h1>
-          <p>{mission.missionName}</p>
-          <p>le: {format(new Date(mission.beginAt), "dd/MM/yyyy HH:mm")}</p>
-          <p>Lieu de rendez-vous: {mission.place}</p>
-          <Link to={`/adminroutes/missions/${mission.id}`}>
-            Page de la mission
-          </Link>
+          <h1>Pas disponible? Dommage!</h1>
+          <p>Mais on se revoit une autre fois alors 😄</p>
+          <Link to={"/"}>Retour à l'accueil</Link>
         </>
       ) : (
         <div>

@@ -43,3 +43,31 @@ body {
 [data-suggested-value] {
   font-weight: bold;
 }
+
+input,
+select {
+  text-align: center;
+  border-radius: 8px;
+  width: 150px;
+  background-color: bisque;
+  border: 1px solid black;
+}
+
+.userCard {
+  transition: ease-in-out;
+  transition-duration: 500ms;
+  background-image: linear-gradient(
+    106.9deg,
+    rgba(148, 14, 60, 1) 60.9%,
+    rgba(3, 22, 27, 1) 122.3%
+  );
+}
+.userCard:hover {
+  transition: ease-in-out;
+  transition-duration: 500ms;
+  background-image: linear-gradient(
+    286.9deg,
+    rgba(148, 14, 60, 1) 60.9%,
+    rgba(3, 22, 27, 1) 122.3%
+  );
+}

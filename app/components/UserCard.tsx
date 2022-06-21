@@ -24,7 +24,7 @@ const UserCard = (userInfo: UserCardProps) => {
   };
   return (
     <div
-      className="userCard w-full md:w-48 bg-orange-200 flex flex-col mx-auto p-2"
+      className="userCard w-full md:w-48  rounded-md flex flex-col mx-auto p-2"
       key={userInfo.id}
     >
       <div className="PhotoAFaire mx-auto w-20 h-20 bg-white rounded-full mb-5"></div>
@@ -36,7 +36,10 @@ const UserCard = (userInfo: UserCardProps) => {
 
         <div className="">
           <Link to={`/userUpdate/${userInfo.id}`}>
-            <button className="p-2 bg-red-400 border-2"> Modifier</button>
+            <button className="p-2 bg-red-400 border-2 rounded">
+              {" "}
+              Modifier
+            </button>
           </Link>
           <Form
             method="post"
@@ -55,7 +58,7 @@ const UserCard = (userInfo: UserCardProps) => {
                 type="submit"
                 name="_action"
                 value={"delete"}
-                className="p-2 bg-red-400 border-2"
+                className="p-2 bg-red-400 border-2 rounded mt-1"
               >
                 Supprimer
               </button>

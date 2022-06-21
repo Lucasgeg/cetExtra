@@ -8,7 +8,10 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useCatch,
 } from "@remix-run/react";
+import ErrorComponent from "./components/ErrorComponent";
+import Footer from "./components/Footer";
 import styles from "./styles/app.css";
 import directStyle from "./styles/style.css";
 
@@ -35,7 +38,25 @@ export const loader: LoaderFunction = (args) => {
     { loadUser: true }
   );
 }; /* 1 */
-export const CatchBoundary = ClerkCatchBoundary(); /* 2 */
+const Boundary = () => {
+  const caught = useCatch();
+  return (
+    <html>
+      <head>
+        <title>Oops!</title>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <h1>
+          {caught.status} {caught.statusText}
+        </h1>
+        <Scripts />
+      </body>
+    </html>
+  );
+};
+export const CatchBoundary = ClerkCatchBoundary(Boundary); /* 2 */
 
 function App() {
   return (
@@ -54,3 +75,6 @@ function App() {
   );
 }
 export default ClerkApp(App);
+export const ErrorBoundary = ({ error }: { error: Error }) => {
+  return <ErrorComponent error={error} />;
+};

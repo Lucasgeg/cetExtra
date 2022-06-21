@@ -5,6 +5,7 @@ import "@reach/combobox/styles.css";
 import Menu from "~/components/Menu";
 import CreateMissionForm from "~/components/CreateMissionForm";
 import { getCurrentUser } from "~/utils/newAuth.server";
+import Footer from "~/components/Footer";
 
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
@@ -45,12 +46,14 @@ const index = () => {
   return (
     <div>
       <Menu />
-      <h1>Hello create Page!!!</h1>
-      <h2>Nouvelle mission:</h2>
-      <div className="w-2/3 mx-auto flex">
-        <CreateMissionForm />
-      </div>
+      <h1 className="text-center text-xl my-2">
+        cet Extra! Création de mission
+      </h1>
+
+      <CreateMissionForm />
+
       <div className=""></div>
+      <Footer />
     </div>
   );
 };

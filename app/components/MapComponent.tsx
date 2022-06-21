@@ -168,7 +168,7 @@ export const Search = ({ formData, setFormData, panTo }) => {
     }
   };
   return (
-    <div className="">
+    <div className="text-center">
       <Combobox onSelect={handleSelect}>
         <ComboboxInput
           value={value}

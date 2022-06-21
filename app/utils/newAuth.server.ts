@@ -57,8 +57,8 @@ export const userIsNew = async (request) => {
 export const createNewUser = async (form: TypeData) => {
   const email = form.email.toString().toLowerCase().trim();
   const authId = form.authId.toString().trim();
-  const firstName = form.firstName.toLowerCase().trim();
-  const lastName = form.lastName.toLowerCase().trim();
+  const firstName = form.firstName.trim();
+  const lastName = form.lastName.trim();
   const birthplace = form.birthplace.toString().toLowerCase().trim();
   const birthday = form.birthday.toString().toLowerCase().trim();
 

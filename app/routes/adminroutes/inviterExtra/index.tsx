@@ -25,8 +25,8 @@ export const action: ActionFunction = async ({ request }) => {
   //TODO recupérer les erreurs ou messages des fonctions
   const form = await request.formData();
   const action = form.get("_action");
-  const user = form.get("user");
-  const mission = form.get("mission");
+  const user = form.get("user").toString();
+  const mission = form.get("mission").toString();
   switch (action) {
     case "invite": {
       return await sendPendingUserToMission(user, mission);
