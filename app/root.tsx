@@ -47,7 +47,7 @@ const Boundary = () => {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="h-screen">
         <h1>
           {caught.status} {caught.statusText}
         </h1>
@@ -60,12 +60,12 @@ export const CatchBoundary = ClerkCatchBoundary(Boundary); /* 2 */
 
 function App() {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full">
       <head>
         <Meta />
         <Links />
       </head>
-      <body className="max-w-7xl mx-auto">
+      <body className="h-full">
         <Outlet />
         <ScrollRestoration />
         <Scripts />

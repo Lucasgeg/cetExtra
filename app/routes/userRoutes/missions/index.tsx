@@ -1,9 +1,9 @@
-import { Missions, Statut } from "@prisma/client";
+import type { Missions, Statut } from "@prisma/client";
 import type { LoaderFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
+import Footer from "~/components/Footer";
 import Menu from "~/components/Menu";
 import MissionList from "~/components/MissionList";
-import { getUser } from "~/utils/auth.server";
 import { getCurrentUser } from "~/utils/newAuth.server";
 import { userMissions } from "~/utils/users.server";
 
@@ -42,10 +42,10 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 const index = () => {
   return (
-    <div className="min-h-screen">
+    <div className="">
       <Menu />
-      <h1>Mission list of user</h1>
       <MissionList />
+      <Footer />
     </div>
   );
 };

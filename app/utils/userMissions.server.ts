@@ -10,16 +10,17 @@ type pendingUserToMission = {
   missionId: string;
 };
 
-type MissionMailData = {
+type PendingMission = {
+  missionId: string;
   missionName: string;
-  missionPlace: string;
-  missionDate: Date;
+  place: string;
+  beginAt: string;
 };
 
 type MailData = {
   email: string;
   token: string;
-  missionInformation: MissionMailData;
+  missionInformation: PendingMission;
 };
 
 const sendMail = (
@@ -67,41 +68,43 @@ const sendMail = (
   })();
 };
 export const sendPendingUserToMission = async (
-  user: string,
-  mission: string
+  userMail: string,
+  missionId: string
 ) => {
   const token = crypto.randomBytes(16).toString("hex");
-  //verif si mission déjà proposé
-  if (typeof user !== "string") return;
+  //verif si mission déjà proposé ‼ NE FONCTIONNE PAS--- A VOIR
+  if (typeof userMail !== "string") return;
   const allreadyIn = await prisma.pendingUserToMission.findFirst({
-    where: { userMail: user, AND: { missionId: mission } },
+    where: { userMail, AND: { missionId } },
   });
   if (allreadyIn)
     return json({ error: "User is allready on the pending List" });
 
+  const userFirstName = (
+    await prisma.user.findUnique({ where: { email: userMail } })
+  ).firstName;
+  const missionInfos = await prisma.missions.findUnique({
+    where: { id: missionId },
+  });
+  const missionName = missionInfos.missionName;
+  const place = missionInfos.place;
+  const beginAtMail = format(
+    new Date(missionInfos.beginAt),
+    "dd/MM/yyyy à HH:mm"
+  );
+  const beginAt = missionInfos.beginAt;
+  const missionData = { missionId, missionName, place, beginAt };
   await prisma.user.update({
-    where: { email: user },
+    where: { email: userMail },
     data: { pendingToken: { push: token } },
   });
 
   await prisma.pendingUserToMission.create({
-    data: { userMail: user, missionId: mission, token },
+    data: { userMail, ...missionData, token },
   });
-  const userFirstName = (
-    await prisma.user.findUnique({ where: { email: user } })
-  ).firstName;
-  const missionInfos = await prisma.missions.findUnique({
-    where: { id: mission },
-  });
-  const missionName = missionInfos.missionName;
-  const missionPlace = missionInfos.place;
-  const missionDate = format(
-    new Date(missionInfos.beginAt),
-    "dd/MM/yyyy à HH:mm"
-  );
 
   //send mail to user
-  sendMail(user, userFirstName, token, missionName, missionPlace, missionDate);
+  sendMail(userMail, userFirstName, token, missionName, place, beginAtMail);
   return json({ message: "Invitation sended" });
 };
 export const getMissionByToken = async (token: string) => {
@@ -150,9 +153,15 @@ export const validateMissionToken = async (userMail: string, token: string) => {
   console.log("User is now connected");
 
   //redirect validatePage avec mission
-  return "toto";
+  return true;
 };
-const validateRedirect = async (mission) => {};
+//function for rendering background on select but how???
+export const userPendingInvitation = async (userMail: string) => {
+  const pendingInvitation = await prisma.pendingUserToMission.findMany({
+    where: { userMail },
+  });
+  return pendingInvitation;
+};
 export const refuseMissionToken = async (userMail: string, token: string) => {
   const haveTheToken = await prisma.user.findMany({
     where: { email: userMail, AND: { pendingToken: { has: token } } },
@@ -177,7 +186,7 @@ export const refuseMissionToken = async (userMail: string, token: string) => {
   });
   console.log("User not connected and deleted from pendingList");
 
-  return json({ message: "User not connected and deleted from pendingList" });
+  return true;
 };
 export const connectToMission = async (user: string, mission: string) => {
   const userToConnect = await prisma.user.findUnique({

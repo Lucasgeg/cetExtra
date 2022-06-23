@@ -58,10 +58,13 @@ model Missions {
 
 model PendingUserToMission {
   //mettre token en ID
-  token     String   @id @map("_id")
-  userMail  String
-  missionId String
-  createdAt DateTime @default(now())
+  token       String   @id @map("_id")
+  userMail    String
+  missionId   String   @unique
+  createdAt   DateTime @default(now())
+  missionName String
+  place       String
+  beginAt     DateTime
 }
 
 enum Role {

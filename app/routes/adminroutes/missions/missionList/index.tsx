@@ -61,7 +61,7 @@ const index = () => {
       return alert("Erreur dans la saisie, pas de suppresion");
   };
   return (
-    <div className="h-screen">
+    <div className="h-screen p-5">
       <Menu />
       <div className="w-full">
         <h1 className="text-center text-2xl my-2">cet Extra! Missions</h1>

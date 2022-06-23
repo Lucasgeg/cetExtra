@@ -33,7 +33,7 @@ const MissionList = () => {
   const [toPastMission, setToPastMission] = useState(false);
   return (
     <>
-      <div className="flex w-1/4 justify-around">
+      <div className="flex w-1/4 justify-around p-5">
         <button
           onClick={() => setToPastMission(!toPastMission)}
           className="p-3 bg-slate-400 rounded-lg  hover:bg-orange-200"
@@ -136,17 +136,19 @@ const MissionList = () => {
             </>
           )}
         </tbody>
-        <tfoot>
-          <tr>
-            <td colSpan={4} className="text-center">
-              <button className="p-3 bg-slate-400 rounded-lg hover:bg-orange-200 my-1">
-                <Link to={"/adminroutes/missions/createMission"}>
-                  Créer une mission
-                </Link>
-              </button>
-            </td>
-          </tr>
-        </tfoot>
+        {userStatut !== "USER" && (
+          <tfoot>
+            <tr>
+              <td colSpan={4} className="text-center">
+                <button className="p-3 bg-slate-400 rounded-lg hover:bg-orange-200 my-1">
+                  <Link to={"/adminroutes/missions/createMission"}>
+                    Créer une mission
+                  </Link>
+                </button>
+              </td>
+            </tr>
+          </tfoot>
+        )}
       </table>
     </>
   );

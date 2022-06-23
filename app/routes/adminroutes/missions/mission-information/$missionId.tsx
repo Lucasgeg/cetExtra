@@ -129,7 +129,7 @@ const $missionId = () => {
         Page d'information de la mission:
         <br /> {mission.missionName}
       </h1>
-      <div className="lg:flex">
+      <div className="md:flex p-10">
         <div className="w-1/2">
           {updateMode ? (
             <>
@@ -149,7 +149,7 @@ const $missionId = () => {
                   name="beginAt"
                   value={formData.beginAt}
                   onChange={(e) => handleInputChange(e, "beginAt")}
-                />{" "}
+                />
                 <br />
                 <label htmlFor="endAt">Fin</label>
                 <input
@@ -211,7 +211,7 @@ const $missionId = () => {
             </>
           )}
         </div>
-        <div className="w-1/2">
+        <div className="w-1/3">
           <table className="w-1/2 mx-auto">
             <thead>
               <tr>

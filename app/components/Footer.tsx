@@ -1,16 +1,35 @@
 const Footer = () => {
   return (
-    <footer>
-      <div className="h-fit absolute bottom-0 text-center text-xs bg-slate-400 left-1/2 -translate-x-1/2 p-2">
-        <h3>cet Extra!</h3>
-        <p>Application web réalisée par Lucas Gégot</p>
-        <p>
-          Cette application est à destination d'employeurs et employés du
-          secteur de la restauration évènementielle
-        </p>
-        <p>Contact: lucas.gegot.pro@gmail.com</p>
-        <p>Mentions légales & politique de cookie à venir</p>
-      </div>
+    <footer className="p-4 bg-white rounded-lg shadow md:flex md:items-center md:justify-between md:p-6 dark:bg-white absolute bottom-0 w-full">
+      <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
+        © 2022{" "}
+        <a href="https://cetExtra.fr" className="hover:underline">
+          cet Extra™
+        </a>
+        . All Rights Reserved.
+      </span>
+      <ul className="flex flex-wrap items-center mt-3 text-sm text-gray-500 dark:text-gray-400 sm:mt-0">
+        <li>
+          <a href="#" className="mr-4 hover:underline md:mr-6 ">
+            About
+          </a>
+        </li>
+        <li>
+          <a href="#" className="mr-4 hover:underline md:mr-6">
+            Privacy Policy
+          </a>
+        </li>
+        <li>
+          <a href="#" className="mr-4 hover:underline md:mr-6">
+            Licensing
+          </a>
+        </li>
+        <li>
+          <a href="#" className="hover:underline">
+            Contact
+          </a>
+        </li>
+      </ul>
     </footer>
   );
 };

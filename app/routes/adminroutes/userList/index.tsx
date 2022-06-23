@@ -35,16 +35,14 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 const usersList = () => {
   return (
-    <div className="h-screen max-h-screen overflow-hidden">
+    <div className="max-h-screen">
       <Menu />
-      <div className="">
-        <h1 className="text-3xl text-center my-4">Liste des utilisateurs</h1>
-        <div className="main w-full flex">
-          <div className="rightPart w-full p-5 mx-auto bg-orange-200 overflow-auto">
-            <UserList />
-          </div>
-        </div>
+      <h1 className="text-3xl text-center my-4">Liste des utilisateurs</h1>
+
+      <div className="rightPart w-full py-3 mx-auto bg-orange-200 overflow-auto">
+        <UserList />
       </div>
+
       <Footer />
     </div>
   );

@@ -23,9 +23,9 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 const index = () => {
   return (
-    <div className="h-screen overflow-auto">
+    <div className="max-h-full h-full">
       <Menu />
-      <div className="h-5/6 flex flex-col justify-around">
+      <div className="h-1/2 flex  ">
         <Link
           to={"/adminroutes/missions/createMission"}
           className="createMission flex justify-center items-center m-auto w-1/4 h-16 bg-orange-200 rounded-lg cursor-pointer"
@@ -41,7 +41,7 @@ const index = () => {
         </Link>
         <Link
           to={"/adminroutes/inviterExtra"}
-          className="seeMission flex justify-center items-center m-auto w-1/4 h-16 bg-orange-200 rounded-lg cursor-pointer"
+          className="invitExtra flex justify-center items-center m-auto w-1/4 h-16 bg-orange-200 rounded-lg cursor-pointer"
         >
           Inviter cetExtra
         </Link>

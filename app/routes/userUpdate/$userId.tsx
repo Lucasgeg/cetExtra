@@ -2,7 +2,7 @@
 import type { Missions } from "@prisma/client";
 import { Statut } from "@prisma/client";
 import { Role } from "@prisma/client";
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
@@ -10,6 +10,7 @@ import Menu from "~/components/Menu";
 import { getCurrentUser } from "~/utils/newAuth.server";
 import { disconnectToMission } from "~/utils/userMissions.server";
 import {
+  deleteUser,
   getUserInformation,
   updateUser,
   userMissions,
@@ -36,18 +37,19 @@ type LoaderData = {
 
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
-  const id = form.get("id").toString();
-  let email = form.get("email").toString();
+  const id = form.get("id");
+  let email = form.get("email");
   let firstName = form.get("firstName");
   let lastName = form.get("lastName");
   let birthday = form.get("birthday");
   let birthplace = form.get("birthplace");
   let role = form.get("role");
-  let statut = Number(form.get("statut"));
+  let statut = form.get("statut");
   let password = form.get("password");
   let validatePassword = form.get("validatePassword");
-  const missionId = form.get("missionId").toString();
+  const missionId = form.get("missionId");
   const action = form.get("_action");
+  const selectedUserId = form.get("selectedUserId");
   const data = {
     email,
     firstName,
@@ -67,7 +69,15 @@ export const action: ActionFunction = async ({ request }) => {
       return updateUser(id, data);
     }
     case "removeFromMission": {
+      if (typeof email !== "string" || typeof missionId !== "string")
+        return false;
       return await disconnectToMission(email, missionId);
+    }
+    case "deleteUser": {
+      if (!selectedUserId || typeof selectedUserId !== "string") {
+        return json({ error: "User Id not found on the db" });
+      }
+      return await deleteUser(selectedUserId);
     }
     default:
       throw new Error("Erreur actionData/UserId");
@@ -76,11 +86,18 @@ export const action: ActionFunction = async ({ request }) => {
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const userId = params.userId;
-  const consultingUserId = (await getCurrentUser(request)).id;
+  const consultingUser = await getCurrentUser(request);
+  if (!consultingUser) return redirect("/");
   if (!userId) return json({ error: "No user Information here" });
+  const userStatut = consultingUser.statut;
   const userInfo = await getUserInformation(userId);
   const userFutureMission = (await userMissions(userId)).futureMisions;
-  return json({ user: userInfo, consultingUserId, userFutureMission });
+  return json({
+    user: userInfo,
+    consultingUser,
+    userFutureMission,
+    userStatut,
+  });
 };
 
 export default function userUpdate() {
@@ -118,6 +135,18 @@ export default function userUpdate() {
       "Merci de valider la suppression en écrivant SUPPRIMER"
     );
     if (!answer || answer !== "SUPPRIMER") {
+      alert("Erreur, pas suppression");
+      e.preventDefault();
+      return false;
+    }
+  };
+  const deleteValidation = async (e: React.FormEvent<HTMLFormElement>) => {
+    const answer = prompt(
+      "Merci de valider la suppression en écrivant le prénom de l'utilisateur à supprimer"
+    )
+      .toLowerCase()
+      .trim();
+    if (!answer || answer !== user.firstName.toLowerCase().trim()) {
       alert("Erreur, pas suppression");
       e.preventDefault();
       return false;
@@ -262,6 +291,7 @@ export default function userUpdate() {
               {modify ? "Retour" : "Modifier"}
             </button>
           </div>
+
           <div className="w-1/4 border border-black ml-auto p-2 h-fit">
             <h3 className="text-center underline font-semibold">
               Prochaines missions
@@ -277,29 +307,57 @@ export default function userUpdate() {
                         {mission.missionName}
                       </Link>
                     }
-                    <Form
-                      method="post"
-                      onSubmit={(e) => deleteValidationUserFromMission(e)}
-                    >
-                      <input type="hidden" name="email" value={user.email} />
-                      <input
-                        type="hidden"
-                        name="missionId"
-                        value={mission.id}
-                      />
-                      <button
-                        type="submit"
-                        name="_action"
-                        value={"removeFromMission"}
+                    {user.statut !== "USER" && (
+                      <Form
+                        method="post"
+                        onSubmit={(e) => deleteValidationUserFromMission(e)}
                       >
-                        ❌
-                      </button>
-                    </Form>
+                        <input type="hidden" name="email" value={user.email} />
+                        <input
+                          type="hidden"
+                          name="missionId"
+                          value={mission.id}
+                        />
+                        <button
+                          type="submit"
+                          name="_action"
+                          value={"removeFromMission"}
+                        >
+                          ❌
+                        </button>
+                      </Form>
+                    )}
                   </div>
                 </li>
               ))}
             </ul>
           </div>
+        </div>
+        <div className="delete flex">
+          <Form
+            method="post"
+            onSubmit={(e) => {
+              deleteValidation(e);
+            }}
+            className="ml-auto"
+          >
+            <input type="hidden" name="selectedUserId" value={user.id} />
+            <input
+              type="hidden"
+              name="selectedUserFirstName"
+              value={user.firstName}
+            />
+            {user.statut == "ADMIN" && (
+              <button
+                type="submit"
+                name="_action"
+                value={"deleteUser"}
+                className="p-2 bg-red-400 border-2 rounded mt-1 relative right-0"
+              >
+                Supprimer l'utilisateur
+              </button>
+            )}
+          </Form>
         </div>
       </div>
     </div>

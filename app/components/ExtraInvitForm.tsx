@@ -1,4 +1,4 @@
-import { Missions } from "@prisma/client";
+import type { Missions } from "@prisma/client";
 import { Form, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 
@@ -15,8 +15,8 @@ type LoaderData = {
 const ExtraInvitForm = () => {
   const { missions, userList } = useLoaderData<LoaderData>();
   const [formData, setFormData] = useState({
-    user: "",
-    mission: "",
+    userMail: "",
+    missionId: "",
   });
   const handleInputChange = (
     event:
@@ -29,27 +29,27 @@ const ExtraInvitForm = () => {
 
   return (
     <Form method="post">
-      <label htmlFor="user">Utilisateur</label>
+      <label htmlFor="userMail">Utilisateur</label>
       <br />
       <select
-        name="user"
+        name="userMail"
         id="user"
-        value={formData.user}
-        onChange={(e) => handleInputChange(e, "user")}
+        value={formData.userMail}
+        onChange={(e) => handleInputChange(e, "userMail")}
       >
         {userList.map((user) => (
           <option value={user.email} key={user.email}>
             {user.lastName} {user.firstName}
           </option>
         ))}
-      </select>{" "}
+      </select>
       <br />
-      <label htmlFor="mission">Mission</label>
+      <label htmlFor="missionId">Mission</label>
       <br />
       <select
-        name="mission"
-        value={formData.mission}
-        onChange={(e) => handleInputChange(e, "mission")}
+        name="missionId"
+        value={formData.missionId}
+        onChange={(e) => handleInputChange(e, "missionId")}
       >
         {missions.map((mission) => (
           <option value={mission.id} key={mission.id}>
@@ -64,8 +64,7 @@ const ExtraInvitForm = () => {
         value={"invite"}
         className="p-3 bg-slate-400 rounded-lg hover:bg-orange-200 my-1"
       >
-        Inviter <br />
-        cet Extra!
+        Inviter cet Extra!
       </button>
     </Form>
   );

@@ -9,7 +9,7 @@ const Menu = () => {
   const { userId, userStatut } = useLoaderData<LoaderData>();
 
   return (
-    <div className="mt-10">
+    <div className="p-10">
       {userStatut !== "USER" ? (
         <nav className="admin_Menu flex items-center w-full justify-around">
           <Link to={"/"} className="w-28 h-14 flex bg-orange-200 rounded-lg">
@@ -27,7 +27,7 @@ const Menu = () => {
           >
             <div className="m-auto">Missions</div>
           </Link>
-          <div className="absolute top-2 left-2">
+          <div className="relative top-2 left-2">
             <SignedIn>
               <UserButton /> <br />
               <div className="w-fit p-2 bg-orange-300 rounded-md">
@@ -47,7 +47,10 @@ const Menu = () => {
           >
             <div className="m-auto">Mes Missions</div>
           </Link>
-          <Link to={"/"} className="w-28 h-14 flex bg-orange-200 rounded-lg">
+          <Link
+            to={"/userroutes/notifications"}
+            className="w-28 h-14 flex bg-orange-200 rounded-lg"
+          >
             <div className="m-auto">Notifications</div>
           </Link>
           <Link to={"/"} className="w-28 h-14 flex bg-orange-200 rounded-lg">
