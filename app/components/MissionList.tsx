@@ -2,6 +2,7 @@ import type { Missions, Statut } from "@prisma/client";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { format } from "date-fns";
 import { useState } from "react";
+import FullMapComponent from "./FullMapComponent";
 
 type LoaderData = {
   futureMissionList: Missions[];
@@ -10,7 +11,10 @@ type LoaderData = {
   userId: string;
   userFutureMissions: Missions[];
   userPastMissions: Missions[];
+  apiKey: string;
 };
+
+//TODO liste des missions name dans partie map avec onClick(()=>panTo mission)
 
 const MissionList = () => {
   const {
@@ -30,43 +34,68 @@ const MissionList = () => {
       return alert("Erreur dans la saisie, pas de suppresion");
     }
   };
+  const [page, setPage] = useState("missionList");
   const [toPastMission, setToPastMission] = useState(false);
   return (
     <>
-      <div className="flex w-1/4 justify-around p-5">
+      <div className="ml-5">
+        {page == "missionList" ? (
+          <button
+            onClick={() => setToPastMission(!toPastMission)}
+            type="button"
+            className="mr-3 inline-block px-6 py-3 font-bold text-center bg-gradient-to-tl from-[#ffa600] to-[#c94000] uppercase align-middle transition-all rounded-lg cursor-pointer leading-[1.4] text-[0.75rem] ease-in tracking-tight shadow-md bg-150 bg-x-25 hover:scale-[1.02] active:opacity-[.85] hover:shadow-xs text-white"
+          >
+            {toPastMission ? "Prochaines missions" : "Missions passée"}
+          </button>
+        ) : (
+          <button
+            onClick={() => setPage("missionList")}
+            type="button"
+            className="mr-3 inline-block px-6 py-3 font-bold text-center bg-gradient-to-tl from-[#ffa600] to-[#c94000] uppercase align-middle transition-all rounded-lg cursor-pointer leading-[1.4] text-[0.75rem] ease-in tracking-tight shadow-md bg-150 bg-x-25 hover:scale-[1.02] active:opacity-[.85] hover:shadow-xs text-white"
+          >
+            Mission
+          </button>
+        )}
+        <Link to={"/adminroutes/missions/createMission"}>
+          <button
+            type="button"
+            className="mr-3 inline-block px-6 py-3 font-bold text-center bg-gradient-to-tl from-[#ffa600] to-[#c94000] uppercase align-middle transition-all rounded-lg cursor-pointer leading-[1.4] text-[0.75rem] ease-in tracking-tight shadow-md bg-150 bg-x-25 hover:scale-[1.02] active:opacity-[.85] hover:shadow-xs text-white"
+          >
+            Créer Mission
+          </button>
+        </Link>
         <button
-          onClick={() => setToPastMission(!toPastMission)}
-          className="p-3 bg-slate-400 rounded-lg  hover:bg-orange-200"
+          type="button"
+          className="mr-3 inline-block px-6 py-3 font-bold text-center bg-gradient-to-tl from-[#ffa600] to-[#c94000] uppercase align-middle transition-all rounded-lg cursor-pointer leading-[1.4] text-[0.75rem] ease-in tracking-tight shadow-md bg-150 bg-x-25 hover:scale-[1.02] active:opacity-[.85] hover:shadow-xs text-white"
+          onClick={() => setPage("map")}
         >
-          {toPastMission ? "Prochaines missions" : "Missions passée"}
-        </button>
-        <button className="p-3 bg-slate-400 rounded-lg  hover:bg-orange-200">
-          <Link to={"/adminroutes/missions/createMission"}>
-            Créer une mission
-          </Link>
+          Carte
         </button>
       </div>
-      <table className="border-2 border-black mx-auto w-5/6 bg-slate-300 mt-2">
-        <thead className="border-2 border-black">
-          <tr>
-            <th colSpan={4}>
-              Liste des missions <br />
-              {toPastMission ? "passées" : "à venir"}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr className="border-2 border-black">
-            <th>Nom Mission</th>
-            <th>Date Mission</th>
-            <th>Lieu Mission</th>
-            <th>Actions</th>
-          </tr>
-          {toPastMission ? (
-            <>
-              {}
-              {(userStatut == "USER" ? userPastMissions : pastMissionList).map(
-                (m) => (
+      {page == "missionList" && (
+        <table className="border-2 border-black mx-auto w-5/6 bg-slate-300 mt-2">
+          <thead className="border-2 border-black">
+            <tr>
+              <th colSpan={4}>
+                Liste des missions <br />
+                {toPastMission ? "passées" : "à venir"}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="border-2 border-black">
+              <th>Nom Mission</th>
+              <th>Date Mission</th>
+              <th>Lieu Mission</th>
+              <th>Actions</th>
+            </tr>
+            {toPastMission ? (
+              <>
+                {}
+                {(userStatut == "USER"
+                  ? userPastMissions
+                  : pastMissionList
+                ).map((m) => (
                   <tr key={m.id} className="border-2 border-black">
                     <td>{m.missionName}</td>
                     <td>{format(new Date(m.beginAt), "dd/MM/yyyy HH:mm")}</td>
@@ -93,13 +122,14 @@ const MissionList = () => {
                       </div>
                     </td>
                   </tr>
-                )
-              )}
-            </>
-          ) : (userStatut == "USER" ? userFutureMissions : futureMissionList)
-              .length ? (
-            (userStatut == "USER" ? userFutureMissions : futureMissionList).map(
-              (m) => {
+                ))}
+              </>
+            ) : (userStatut == "USER" ? userFutureMissions : futureMissionList)
+                .length ? (
+              (userStatut == "USER"
+                ? userFutureMissions
+                : futureMissionList
+              ).map((m) => {
                 return (
                   <tr key={m.id}>
                     <td>{m.missionName}</td>
@@ -126,30 +156,35 @@ const MissionList = () => {
                     </td>
                   </tr>
                 );
-              }
-            )
-          ) : (
-            <>
+              })
+            ) : (
+              <>
+                <tr>
+                  <td colSpan={4}>Pas de mission à venir!</td>
+                </tr>
+              </>
+            )}
+          </tbody>
+          {userStatut !== "USER" && (
+            <tfoot>
               <tr>
-                <td colSpan={4}>Pas de mission à venir!</td>
+                <td colSpan={4} className="text-center">
+                  <button className="p-3 bg-slate-400 rounded-lg hover:bg-orange-200 my-1">
+                    <Link to={"/adminroutes/missions/createMission"}>
+                      Créer une mission
+                    </Link>
+                  </button>
+                </td>
               </tr>
-            </>
+            </tfoot>
           )}
-        </tbody>
-        {userStatut !== "USER" && (
-          <tfoot>
-            <tr>
-              <td colSpan={4} className="text-center">
-                <button className="p-3 bg-slate-400 rounded-lg hover:bg-orange-200 my-1">
-                  <Link to={"/adminroutes/missions/createMission"}>
-                    Créer une mission
-                  </Link>
-                </button>
-              </td>
-            </tr>
-          </tfoot>
-        )}
-      </table>
+        </table>
+      )}
+      {page == "map" && (
+        <div className="w-5/6 mx-auto p-2">
+          <FullMapComponent />
+        </div>
+      )}
     </>
   );
 };
