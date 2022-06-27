@@ -34,11 +34,16 @@ const MissionList = () => {
       return alert("Erreur dans la saisie, pas de suppresion");
     }
   };
-  const [page, setPage] = useState("missionList");
+  const [page, setPage] = useState("map");
   const [toPastMission, setToPastMission] = useState(false);
+  //lat: 48.41010665893555, lng: -4.455512046813965
+  const [center, setCenter] = useState({
+    lat: 48.41010665893555,
+    lng: -4.455512046813965,
+  });
   return (
     <>
-      <div className="ml-5">
+      <div className="h-max">
         {page == "missionList" ? (
           <button
             onClick={() => setToPastMission(!toPastMission)}
@@ -181,8 +186,9 @@ const MissionList = () => {
         </table>
       )}
       {page == "map" && (
-        <div className="w-5/6 mx-auto p-2">
-          <FullMapComponent />
+        <div className="mx-auto p-2 h-max">
+          {/* missionList avec juste nom et date mapping=>mission recup lat et lng a envoyé à fullmap component */}
+          <FullMapComponent center={center} setCenter={setCenter} />
         </div>
       )}
     </>

@@ -22,6 +22,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
   const user = await getCurrentUser(request);
   if (!user) return redirect("/");
+  //verif user have token
 
   const mission = await getMissionByToken(token);
   await validateMissionToken(user.email, token);

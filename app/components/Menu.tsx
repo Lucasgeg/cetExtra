@@ -1,4 +1,11 @@
-import { SignedIn, SignOutButton, UserButton } from "@clerk/remix";
+import {
+  RedirectToSignIn,
+  SignedIn,
+  SignedOut,
+  SignOutButton,
+  useClerk,
+  UserButton,
+} from "@clerk/remix";
 import type { Statut } from "@prisma/client";
 import { Link, useLoaderData } from "@remix-run/react";
 type LoaderData = {
@@ -7,7 +14,7 @@ type LoaderData = {
 };
 const Menu = () => {
   const { userId, userStatut } = useLoaderData<LoaderData>();
-
+  const { signOut } = useClerk();
   return (
     <div className="p-10">
       {userStatut !== "USER" ? (
@@ -31,7 +38,7 @@ const Menu = () => {
             <SignedIn>
               <UserButton /> <br />
               <div className="w-fit p-2 bg-orange-300 rounded-md">
-                <SignOutButton />
+                <button onClick={() => signOut()}>Déconnexion</button>
               </div>
             </SignedIn>
           </div>
@@ -69,9 +76,12 @@ const Menu = () => {
             <SignedIn>
               <UserButton /> <br />
               <div className="w-fit p-2 bg-orange-300 rounded-md">
-                <SignOutButton />
+                <button onClick={() => signOut()}>Déconnexion</button>
               </div>
             </SignedIn>
+            <SignedOut>
+              <RedirectToSignIn />
+            </SignedOut>
           </div>
         </nav>
       )}
