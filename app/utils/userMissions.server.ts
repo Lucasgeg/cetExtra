@@ -121,12 +121,19 @@ export const getMissionByToken = async (token: string) => {
 };
 export const validateMissionToken = async (userMail: string, token: string) => {
   //est ce que l'user avec le mail Usermail à le token?
-  const haveTheToken = await prisma.user.findMany({
+  //fonctionne pas
+  /*  const haveTheToken = await prisma.user.findMany({
     where: { email: userMail, AND: { pendingToken: { has: token } } },
     select: { pendingToken: true },
   });
   if (!haveTheToken.length) return json({ message: "not found", status: 404 });
-  console.log("token founded");
+  console.log("token founded"); */
+
+  const userHaveToken = await prisma.user.findFirst({
+    where: { email: userMail, AND: { pendingToken: { has: token } } },
+  });
+  if (!userHaveToken) return false;
+  console.log("He have the token");
 
   const userTokenRes = await prisma.user.findUnique({
     where: { email: userMail },

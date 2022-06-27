@@ -1,4 +1,4 @@
-import type { LoaderFunction } from "@remix-run/node";
+import { json, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { format } from "date-fns";
@@ -25,8 +25,9 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   //verif user have token
 
   const mission = await getMissionByToken(token);
-  await validateMissionToken(user.email, token);
-  return mission;
+  const validate = await validateMissionToken(user.email, token);
+
+  return json({ validate, mission });
 };
 
 const $token = () => {
@@ -43,10 +44,31 @@ export default $token;
 
 const Message = () => {
   const mission: Mission = useLoaderData();
+  const { validate } = useLoaderData();
 
   return (
     <div>
-      {mission.id ? (
+      {validate == false ? (
+        <div className="w-1/2 bg-orange-200 mx-auto mt-10 text-center p-4">
+          <img src={logo} alt="logo cet extra" className="mx-auto mb-3" />
+          <h1 className="text-3xl">cet Extra Dramatique! 😱😱</h1>
+          <hr className="my-5 w-1/2 mx-auto border-black" />
+          <p>Mission non trouvé, </p>
+          <p>As-tu vérifié dans tes missions si tu n'avais pas déjà validé?</p>
+          <p>
+            Sinon si le problème persiste merci de contacter l'administrateur du
+            site
+          </p>
+          <Link to={"/"}>
+            <button
+              type="button"
+              className="inline-block px-6 py-2 border-2 border-gray-800 text-gray-800 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out"
+            >
+              Retour à l'accueil
+            </button>
+          </Link>
+        </div>
+      ) : (
         <div className="w-1/2 bg-white mx-auto mt-10 text-center p-4">
           <img src={logo} alt="logo cet extra" className="mx-auto mb-3" />
           <h1>cet Extra Ordinaire!</h1>
@@ -66,26 +88,6 @@ const Message = () => {
               className="inline-block px-6 py-2 border-2 border-gray-800 text-gray-800 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out"
             >
               Page de la mission
-            </button>
-          </Link>
-        </div>
-      ) : (
-        <div className="w-1/2 bg-orange-200 mx-auto mt-10 text-center p-4">
-          <img src={logo} alt="logo cet extra" className="mx-auto mb-3" />
-          <h1 className="text-3xl">cet Extra Dramatique! 😱😱</h1>
-          <hr className="my-5 w-1/2 mx-auto border-black" />
-          <p>Mission non trouvé, </p>
-          <p>As-tu vérifié dans tes missions si tu n'avais pas déjà validé?</p>
-          <p>
-            Sinon si le problème persiste merci de contacter l'administrateur du
-            site
-          </p>
-          <Link to={"/"}>
-            <button
-              type="button"
-              className="inline-block px-6 py-2 border-2 border-gray-800 text-gray-800 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out"
-            >
-              Retour à l'accueil
             </button>
           </Link>
         </div>

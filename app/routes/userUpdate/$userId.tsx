@@ -2,7 +2,8 @@
 import type { Missions } from "@prisma/client";
 import { Statut } from "@prisma/client";
 import { Role } from "@prisma/client";
-import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
@@ -146,7 +147,8 @@ export default function userUpdate() {
     )
       .toLowerCase()
       .trim();
-    if (!answer || answer !== user.firstName.toLowerCase().trim()) {
+    const userFirstName = user.firstName.toLowerCase().trim();
+    if (!answer || answer !== userFirstName) {
       alert("Erreur, pas suppression");
       e.preventDefault();
       return false;

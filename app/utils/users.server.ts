@@ -1,7 +1,7 @@
 import type { RegisterForm } from "./auth.server";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma.server";
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import type { Role, Statut } from "@prisma/client";
 
 //////////////////////types////////////////////
@@ -77,7 +77,8 @@ export const deleteUser = async (id: string) => {
   if (!user) {
     return json({ error: "User not found" });
   }
-  return await prisma.user.delete({ where: { id } });
+  await prisma.user.delete({ where: { id } });
+  throw redirect("/adminroutes/userlist");
 };
 
 export const updateUser = async (id: string, form: UpdateForm) => {

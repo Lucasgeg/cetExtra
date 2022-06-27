@@ -7,6 +7,7 @@ import {
   UserButton,
 } from "@clerk/remix";
 import type { Statut } from "@prisma/client";
+import { redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 type LoaderData = {
   userStatut: Statut;
@@ -76,7 +77,13 @@ const Menu = () => {
             <SignedIn>
               <UserButton /> <br />
               <div className="w-fit p-2 bg-orange-300 rounded-md">
-                <button onClick={() => signOut()}>Déconnexion</button>
+                <button
+                  onClick={() => {
+                    signOut();
+                  }}
+                >
+                  Déconnexion
+                </button>
               </div>
             </SignedIn>
             <SignedOut>
