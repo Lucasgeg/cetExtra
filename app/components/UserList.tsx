@@ -1,11 +1,10 @@
 import { Link, useLoaderData } from "@remix-run/react";
-import React from "react";
 import UserCard from "./UserCard";
 
 const UserList = () => {
   const { userList } = useLoaderData();
   return (
-    <ul className="grid grid-cols-3 gap-2">
+    <ul className="grid grid-cols-1 md:grid-cols-9 gap-2 auto-rows-auto">
       {/* TODO: choix par role/workedtime etc... */}
       {userList.map((u) => (
         <Link to={`/userUpdate/${u.id}`} key={u.id}>

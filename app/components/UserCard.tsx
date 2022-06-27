@@ -1,3 +1,4 @@
+import { User } from "@prisma/client";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 
 type UserCardProps = {
@@ -10,21 +11,11 @@ type UserCardProps = {
   workedTime: number;
 };
 
-const UserCard = (userInfo: UserCardProps) => {
-  const { userStatut } = useLoaderData();
-  const deleteValidation = async (e: React.FormEvent<HTMLFormElement>) => {
-    const answer = prompt(
-      "Merci de valider la suppression en écrivant le prénom de l'utilisateur à supprimer"
-    );
-    if (!answer || answer !== userInfo.firstName) {
-      alert("Erreur, pas suppression");
-      e.preventDefault();
-      return false;
-    }
-  };
+const UserCard = (userInfo: User) => {
+  //SELECT SERVEUR // CUISINE
   return (
     <div
-      className="userCard w-full md:w-48  rounded-md flex flex-col p-2"
+      className="userCard w-fit rounded-md flex flex-col p-2 mx-auto"
       key={userInfo.id}
     >
       <div className="PhotoAFaire mx-auto w-20 h-20 bg-white rounded-full mb-5"></div>
@@ -33,35 +24,6 @@ const UserCard = (userInfo: UserCardProps) => {
           {userInfo.firstName} {userInfo.lastName}
         </p>
         <p>{userInfo.role}</p>
-
-        <div className="">
-          <Link to={`/userUpdate/${userInfo.id}`}>
-            <button className="p-2 bg-red-400 border-2 rounded">Infos</button>
-          </Link>
-          <Form
-            method="post"
-            onSubmit={(e) => {
-              deleteValidation(e);
-            }}
-          >
-            <input type="hidden" name="selectedUserId" value={userInfo.id} />
-            <input
-              type="hidden"
-              name="selectedUserFirstName"
-              value={userInfo.firstName}
-            />
-            {userStatut == "ADMIN" && (
-              <button
-                type="submit"
-                name="_action"
-                value={"delete"}
-                className="p-2 bg-red-400 border-2 rounded mt-1"
-              >
-                Supprimer
-              </button>
-            )}
-          </Form>
-        </div>
       </div>
     </div>
   );

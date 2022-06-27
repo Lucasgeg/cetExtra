@@ -28,7 +28,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const userStatut = user.statut;
   if (userStatut == "USER") return redirect("/");
 
-  const userList = await getUserList();
+  const userList = (await getUserList()).userList;
 
   return json({ userList, userStatut });
 };
@@ -39,7 +39,7 @@ const usersList = () => {
       <Menu />
       <h1 className="text-3xl text-center my-4">Liste des utilisateurs</h1>
 
-      <div className="rightPart w-full py-3 mx-auto bg-orange-200 overflow-auto">
+      <div className="w-full py-3 mx-auto bg-orange-200 overflow-auto">
         <UserList />
       </div>
 

@@ -1,5 +1,6 @@
 import {
   RedirectToSignIn,
+  RedirectToSignUp,
   SignedIn,
   SignedOut,
   SignOutButton,
@@ -7,7 +8,6 @@ import {
   UserButton,
 } from "@clerk/remix";
 import type { Statut } from "@prisma/client";
-import { redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 type LoaderData = {
   userStatut: Statut;
@@ -16,8 +16,12 @@ type LoaderData = {
 const Menu = () => {
   const { userId, userStatut } = useLoaderData<LoaderData>();
   const { signOut } = useClerk();
+
   return (
     <div className="p-10">
+      <SignedOut>
+        <RedirectToSignUp />
+      </SignedOut>
       {userStatut !== "USER" ? (
         <nav className="admin_Menu flex items-center w-full justify-around">
           <Link to={"/"} className="w-28 h-14 flex bg-orange-200 rounded-lg">
@@ -86,9 +90,6 @@ const Menu = () => {
                 </button>
               </div>
             </SignedIn>
-            <SignedOut>
-              <RedirectToSignIn />
-            </SignedOut>
           </div>
         </nav>
       )}

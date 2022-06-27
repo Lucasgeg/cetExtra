@@ -34,7 +34,7 @@ export const registerPending = async (user: RegisterForm) => {
 };
 
 export const getUserList = async () => {
-  return await prisma.user.findMany({
+  const userList = await prisma.user.findMany({
     select: {
       email: true,
       firstName: true,
@@ -45,6 +45,31 @@ export const getUserList = async () => {
       workedTime: true,
     },
   });
+  const serverList = await prisma.user.findMany({
+    where: { role: "SALLE" },
+    select: {
+      email: true,
+      firstName: true,
+      id: true,
+      lastName: true,
+      role: true,
+      statut: true,
+      workedTime: true,
+    },
+  });
+  const kitchenList = await prisma.user.findMany({
+    where: { role: "CUISINE" },
+    select: {
+      email: true,
+      firstName: true,
+      id: true,
+      lastName: true,
+      role: true,
+      statut: true,
+      workedTime: true,
+    },
+  });
+  return { userList, serverList, kitchenList };
 };
 export const getUserInformation = async (id: string) => {
   const user = await prisma.user.findUnique({ where: { id } });

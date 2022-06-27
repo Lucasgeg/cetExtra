@@ -43,7 +43,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   user?.statut !== "ADMIN" ? redirect("/") : null;
   const missions = (await getMissions()).futureMisions;
-  const userList = await getUserList();
+  const userList = (await getUserList()).userList;
 
   const data: LoaderData = {
     userList,
@@ -55,44 +55,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 const index = () => {
   return (
     //TODO mapping user by workedTime et select role en partie gauche + possibilité d'en sélectionner plusieurs partie droite select mission avec carte (directement carte avec marker des future mission?)
+    //diviser en deux la div, partie gauche listes des usercard (select par role) partie droite table des mission avec une en checkbox
     <div>
       <Menu />
       <h1>Formulaire de connection d'un utilisateur</h1>
       <ExtraInvitForm />
-      {/* <Form method="post">
-        <label htmlFor="user">Utilisateur</label>
-        <br />
-        <select
-          name="user"
-          id="user"
-          value={formData.user}
-          onChange={(e) => handleInputChange(e, "user")}
-        >
-          {userList.map((user) => (
-            <option value={user.email} key={user.email}>
-              {user.lastName} {user.firstName}
-            </option>
-          ))}
-        </select>{" "}
-        <br />
-        <label htmlFor="mission">Mission</label>
-        <br />
-        <select
-          name="mission"
-          value={formData.mission}
-          onChange={(e) => handleInputChange(e, "mission")}
-        >
-          {missions.map((mission) => (
-            <option value={mission.id} key={mission.id}>
-              {mission.missionName}
-            </option>
-          ))}
-        </select>
-        <br />
-        <button type="submit" name="_action" value={"invite"}>
-          proposer extra
-        </button>
-      </Form> */}
     </div>
   );
 };
