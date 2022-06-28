@@ -1,8 +1,7 @@
-import { renderToFile } from "@react-pdf/renderer";
-import { LoaderFunction } from "@remix-run/node";
-import React from "react";
-import Test from "./test";
+import { Page, Text, Document, StyleSheet } from "@react-pdf/renderer";
 
-export const loader: LoaderFunction = async ({ request }) => {
-  return await renderToFile(<Test />, "contracts/myPdfTest.pdf");
+const index = () => {
+  return <div></div>;
 };
+
+export default index;
