@@ -10,13 +10,7 @@ import {
   validateMissionToken,
 } from "~/utils/userMissions.server";
 import logo from "~/assets/cetExtraIcon.png";
-
-type Mission = {
-  id: string;
-  missionName: string;
-  place: string;
-  beginAt: string;
-};
+import { Missions } from "@prisma/client";
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const token = params.token;
@@ -24,8 +18,8 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   const user = await getCurrentUser(request);
   if (!user) return redirect("/");
   //verif user have token
-
   const mission = await getMissionByToken(token);
+
   const validate = await validateMissionToken(user.email, token);
 
   return json({ validate, mission });
@@ -44,8 +38,7 @@ const $token = () => {
 export default $token;
 
 const Message = () => {
-  const mission: Mission = useLoaderData();
-  const { validate } = useLoaderData();
+  const { validate, mission } = useLoaderData();
 
   return (
     <div>
@@ -79,6 +72,7 @@ const Message = () => {
           <p className="underline italic">{mission.missionName}</p>
           <p className="font-semibold">Date de la mission:</p>
           <p className="underline italic">
+            {console.log(mission)}
             {format(new Date(mission.beginAt), "dd/MM/yyyy HH:mm")}
           </p>
           <p className="font-semibold">Lieu de rendez-vous:</p>

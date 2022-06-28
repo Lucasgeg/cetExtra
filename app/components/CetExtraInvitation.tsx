@@ -5,26 +5,38 @@ import { useState } from "react";
 import UserCard from "./UserCard";
 type LoaderData = {
   userList: User[];
-  pendingMissions: Missions[];
+  futureMissions: Missions[];
 };
 
 const CetExtraInvitation = () => {
   const [selectedUser, setSelectedUser] = useState("");
   const [selectedMission, setSelectedMission] = useState("");
   return (
-    <Form method="post" className="w-11/12 mx-auto flex">
-      <div className="left w-5/6 bg-green-500">
-        <Users selectedUser={selectedUser} setSelectedUser={setSelectedUser} />
+    <Form method="post" className="">
+      <div className="w-11/12 mx-auto flex">
+        <div className="left w-5/6">
+          <Users
+            selectedUser={selectedUser}
+            setSelectedUser={setSelectedUser}
+          />
+        </div>
+        <div className="right w-1/6">
+          <MissionTable
+            selectedMission={selectedMission}
+            setSelectedMission={setSelectedMission}
+          />
+          <input type="hidden" name="userMail" value={selectedUser} />
+          <input type="hidden" name="missionId" value={selectedMission} />
+        </div>
       </div>
-      <div className="right w-1/6 bg-white">
-        <MissionTable
-          selectedMission={selectedMission}
-          setSelectedMission={setSelectedMission}
-        />
-        <input type="hidden" name="userMail" value={selectedUser} />
-        <input type="hidden" name="missionId" value={selectedMission} />
+      <div className="w-full text-center">
+        <button
+          type="submit"
+          className="inline-block px-6 py-2 border-2 border-gray-800 text-white font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out mt-4"
+        >
+          Inviter
+        </button>
       </div>
-      <button type="submit">Inviter</button>
     </Form>
   );
 };
@@ -35,22 +47,25 @@ const Users = ({ selectedUser, setSelectedUser }) => {
   const { userList } = useLoaderData<LoaderData>();
 
   return (
-    <ul className="grid grid-cols-9 p-2">
-      {userList.map((user) => (
-        <li
-          key={user.email}
-          className={selectedUser == user.email ? "border-2" : null}
-          onClick={() => setSelectedUser(user.email)}
-        >
-          <UserCard {...user} />
-        </li>
-      ))}
+    <ul className="grid grid-cols-9 p-2 h-96 overflow-auto bg-neutral-400">
+      {userList.map((user) => {
+        const selected = selectedUser == user.email ? "border-2" : null;
+        return (
+          <li
+            key={user.email}
+            className={"h-fit " + selected}
+            onClick={() => setSelectedUser(user.email)}
+          >
+            <UserCard {...user} />
+          </li>
+        );
+      })}
     </ul>
   );
 };
 
 const MissionTable = ({ selectedMission, setSelectedMission }) => {
-  const { pendingMissions } = useLoaderData<LoaderData>();
+  const { futureMissions } = useLoaderData<LoaderData>();
   return (
     <table className="w-full">
       <thead>
@@ -60,7 +75,7 @@ const MissionTable = ({ selectedMission, setSelectedMission }) => {
         </tr>
       </thead>
       <tbody className="text-center p-2">
-        {pendingMissions.map((mission) => (
+        {futureMissions.map((mission) => (
           <tr
             key={mission.id}
             className={`text-sm cursor-pointer ${

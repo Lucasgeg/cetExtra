@@ -111,6 +111,8 @@ export const getMissionByToken = async (token: string) => {
   const pendingMission = await prisma.pendingUserToMission.findUnique({
     where: { token },
   });
+  console.log(pendingMission);
+
   if (!pendingMission) return false;
   const missionId = pendingMission.missionId;
   const mission = await prisma.missions.findUnique({
