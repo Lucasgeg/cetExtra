@@ -1,6 +1,6 @@
 import { json, LoaderFunction, redirect } from "@remix-run/node";
 import Menu from "~/components/Menu";
-import Table from "~/components/Table";
+import Table from "~/components/TableMission";
 import { getCurrentUser } from "~/utils/newAuth.server";
 import {
   getMissionByToken,
