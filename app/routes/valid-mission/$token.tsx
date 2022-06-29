@@ -28,8 +28,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 const $token = () => {
   //TODO message de connexion sinon message d'erreur
   return (
-    <div className="h-screen max-h-screen">
-      <Menu />
+    <div className="">
       <Message />
     </div>
   );
@@ -77,7 +76,7 @@ const Message = () => {
           </p>
           <p className="font-semibold">Lieu de rendez-vous:</p>
           <p className="underline italic"> {mission.place}</p>
-          <Link to={`/adminroutes/missions/mission-information/${mission.id}`}>
+          <Link to={`/mission-information/${mission.id}`}>
             <button
               type="button"
               className="inline-block px-6 py-2 border-2 border-gray-800 text-gray-800 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out"

@@ -107,11 +107,7 @@ const MissionList = () => {
                     <td className="">{m.place}</td>
                     <td className="flex items-center justify-center">
                       <div className=" m-auto">
-                        <Link
-                          to={`/adminroutes/missions/mission-information/${m.id}`}
-                        >
-                          👁️
-                        </Link>
+                        <Link to={`/mission-information/${m.id}`}>👁️</Link>
                         {userStatut == "ADMIN" && (
                           <Form method="post" onSubmit={(e) => handleDelete(e)}>
                             <button
@@ -143,13 +139,7 @@ const MissionList = () => {
                       {m.place.split(",").map((mis) => mis + "")}
                     </td>
                     <td className="flex">
-                      {
-                        <Link
-                          to={`/adminroutes/missions/mission-information/${m.id}`}
-                        >
-                          👁️
-                        </Link>
-                      }
+                      {<Link to={`/mission-information/${m.id}`}>👁️</Link>}
                       {userStatut == "ADMIN" && (
                         <Form method="post" onSubmit={(e) => handleDelete(e)}>
                           <button type="submit" name={"missionId"} value={m.id}>

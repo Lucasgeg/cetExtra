@@ -45,7 +45,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 const index = () => {
   return (
     <div>
-      <Menu />
       <h1 className="text-center text-xl my-2">
         cet Extra! Création de mission
       </h1>
@@ -53,7 +52,6 @@ const index = () => {
       <CreateMissionForm />
 
       <div className=""></div>
-      <Footer />
     </div>
   );
 };

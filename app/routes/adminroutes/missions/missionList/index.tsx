@@ -27,8 +27,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 const index = () => {
   return (
-    <div className="h-screen p-5 max-h-screen">
-      <Menu />
+    <div className="p-5">
       <div className="">
         <MissionList />
       </div>

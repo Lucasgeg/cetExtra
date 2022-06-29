@@ -123,8 +123,7 @@ const $missionId = () => {
   });
 
   return (
-    <div className="h-screen w-full">
-      <Menu />
+    <div className="w-full">
       <h1>
         Page d'information de la mission:
         <br /> {mission.missionName}

@@ -155,8 +155,7 @@ export default function userUpdate() {
     }
   };
   return (
-    <div className="w-full min-h-screen">
-      <Menu />
+    <div className="w-full">
       <div className="w-3/4 mx-auto bg-orange-200 p-5 mt-5">
         <h2 className="text-center text-4xl mb-3">
           Information de: {user.firstName} {user.lastName}
@@ -303,9 +302,7 @@ export default function userUpdate() {
                 <li key={mission.id} className="">
                   <div className="flex justify-between">
                     {
-                      <Link
-                        to={`/adminroutes.missions/mission-information/${mission.id}`}
-                      >
+                      <Link to={`/mission-information/${mission.id}`}>
                         {mission.missionName}
                       </Link>
                     }

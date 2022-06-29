@@ -77,7 +77,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function index() {
   //useHook on components
   return (
-    <div className="h-screen">
+    <div className="">
       <h1>Bienvenue sur cet Extra</h1>
       <h3>
         Afin de finaliser ton inscription nous avons besoin de quelques infos

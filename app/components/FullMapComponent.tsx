@@ -62,9 +62,7 @@ const FullMapComponent = ({ center, setCenter }: Center) => {
                         <h2 className="uppercase">{mission.missionName}</h2>
                         <p>{format(new Date(mission.beginAt), "dd/MM/yy")}</p>
                         <p>{mission.place}</p>
-                        <Link
-                          to={`/adminroutes/missions/mission-information/${mission.id}`}
-                        >
+                        <Link to={`/mission-information/${mission.id}`}>
                           <p className="italic underline">Infos</p>
                         </Link>
                       </div>

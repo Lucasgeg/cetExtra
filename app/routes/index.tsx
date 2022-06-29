@@ -31,10 +31,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 const index = () => {
   return (
     <>
-      <div className="max-h-screen h-screen w-full flex flex-col">
-        <Menu />
+      <div className="min-h-[90vh] w-full flex flex-col">
         <Welcome />
-        <Footer />
       </div>
     </>
   );
@@ -46,7 +44,7 @@ const Welcome = () => {
   const { user, userFutureMissions } = useLoaderData<LoaderData>();
 
   return (
-    <div className="h-fit w-1/2 mx-auto p-5 text-center bg-slate-400 rounded-md ">
+    <div className="h-fit w-1/2 mx-auto p-5 text-center bg-slate-400 rounded-md mb-5">
       <div>
         <img
           src={logo}
@@ -74,9 +72,7 @@ const Welcome = () => {
               )}
             </span>
             <div className="my-5">
-              <Link
-                to={`adminroutes/missions/mission-information/${userFutureMissions[0].id}`}
-              >
+              <Link to={`/mission-information/${userFutureMissions[0].id}`}>
                 <button
                   type="button"
                   className="inline-block px-6 py-2 border-2 border-gray-800 text-gray-800 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out"

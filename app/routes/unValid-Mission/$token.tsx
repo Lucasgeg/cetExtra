@@ -27,7 +27,6 @@ const $token = () => {
   //TODO message de connexion sinon message d'erreur
   return (
     <div>
-      <Menu />
       <Message />
     </div>
   );

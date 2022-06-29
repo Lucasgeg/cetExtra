@@ -58,23 +58,29 @@ type userPropsType = {
 const Users = ({ selectedUser, setSelectedUser }: userPropsType) => {
   const { userList } = useLoaderData<LoaderData>();
 
-  const addToArray = (email) => {
+  const addOrRemoveOnArray = (email) => {
     const userIsOnArray = selectedUser.includes(email);
     if (!userIsOnArray) {
       setSelectedUser([...selectedUser, email]);
+    } else {
+      setSelectedUser(selectedUser.filter((userMail) => userMail !== email));
     }
   };
   return (
-    <ul className="grid grid-cols-9 p-2 h-96 overflow-auto bg-neutral-400">
+    <ul className="grid grid-cols-6 grid-rows-2 gap-2 h-96 m-auto overflow-auto bg-neutral-400">
       {userList.map((user) => {
+        const selected = selectedUser.includes(user.email);
         return (
-          <div className="" key={user.id}>
+          <div
+            className={"h-44 pt-2 " + (selected && " bg-white")}
+            key={user.id}
+          >
             <input
               type={"checkbox"}
               id={user.email}
               name="userMail"
               value={user.email}
-              onChange={(event) => addToArray(event.target.value)}
+              onChange={(event) => addOrRemoveOnArray(event.target.value)}
               hidden={true}
             />
             <label htmlFor={user.email}>

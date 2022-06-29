@@ -17,7 +17,6 @@ type LoaderData = {
 
 const Table = () => {
   const { pendingMissions } = useLoaderData<LoaderData>();
-  console.log(pendingMissions);
 
   return (
     <div>

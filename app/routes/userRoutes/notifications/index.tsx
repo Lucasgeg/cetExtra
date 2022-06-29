@@ -19,8 +19,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function index() {
   //useHook on components
   return (
-    <div className="h-screen overflow-auto">
-      <Menu />
+    <div className=" overflow-auto">
       <h1>cet Extra - Notifications!</h1>
       {/* 
       TODO:

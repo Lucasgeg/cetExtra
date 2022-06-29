@@ -24,7 +24,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 const index = () => {
   return (
     <div className="max-h-full h-full">
-      <Menu />
       <div className="h-1/2 flex  ">
         <Link
           to={"/adminroutes/missions/createMission"}
@@ -46,7 +45,6 @@ const index = () => {
           Inviter cetExtra
         </Link>
       </div>
-      <Footer />
     </div>
   );
 };

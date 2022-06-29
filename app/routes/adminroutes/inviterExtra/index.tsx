@@ -32,7 +32,6 @@ export const action: ActionFunction = async ({ request }) => {
   if (!userMails || !missionId || typeof missionId !== "string") {
     return json({ errors: "Merci de sélectionner un user et une mission" });
   }
-  console.log(userMails, missionId);
 
   return userMails.map(async (userMail) => {
     if (typeof userMail !== "string")
@@ -56,7 +55,6 @@ const index = () => {
     //TODO mapping user by workedTime et select role en partie gauche + possibilité d'en sélectionner plusieurs partie droite select mission avec carte (directement carte avec marker des future mission?)
     //diviser en deux la div, partie gauche listes des usercard (select par role) partie droite table des mission avec une en checkbox
     <div>
-      <Menu />
       <h1 className="text-center text-2xl underline mb-4">
         cet Extra! Invitation
       </h1>
