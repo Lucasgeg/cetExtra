@@ -18,7 +18,7 @@ const Menu = () => {
   const { signOut } = useClerk();
 
   return (
-    <div className="p-10">
+    <div className="pb-6">
       <SignedOut>
         <RedirectToSignUp />
       </SignedOut>

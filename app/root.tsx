@@ -76,7 +76,9 @@ function App() {
       <body className="">
         <div className="min-h-[90vh]">
           <Menu />
-          <Outlet />
+          <div className="min-h-[70vh]">
+            <Outlet />
+          </div>
         </div>
         <Footer />
         <ScrollRestoration />

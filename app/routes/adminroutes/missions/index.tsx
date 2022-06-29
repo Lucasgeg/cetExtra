@@ -23,28 +23,32 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 const index = () => {
   return (
-    <div className="max-h-full h-full">
-      <div className="h-1/2 flex  ">
-        <Link
-          to={"/adminroutes/missions/createMission"}
-          className="createMission flex justify-center items-center m-auto w-1/4 h-16 bg-orange-200 rounded-lg cursor-pointer"
-        >
-          Créer Mission
-        </Link>
+    <div className="flex justify-center items-center ">
+      <Link
+        to={"/adminroutes/missions/createMission"}
+        className="createMission flex justify-center items-center m-auto w-1/5 h-16 bg-orange-200 rounded-lg cursor-pointer"
+      >
+        Créer Mission
+      </Link>
+      <Link
+        to={"/adminroutes/missions/createMission"}
+        className="createMission flex justify-center items-center m-auto w-1/5 h-16 bg-orange-200 rounded-lg cursor-pointer"
+      >
+        cetExtra en attente
+      </Link>
 
-        <Link
-          to={"/adminroutes/missions/missionList"}
-          className="seeMission flex justify-center items-center m-auto w-1/4 h-16 bg-orange-200 rounded-lg cursor-pointer"
-        >
-          Consulter
-        </Link>
-        <Link
-          to={"/adminroutes/inviterExtra"}
-          className="invitExtra flex justify-center items-center m-auto w-1/4 h-16 bg-orange-200 rounded-lg cursor-pointer"
-        >
-          Inviter cetExtra
-        </Link>
-      </div>
+      <Link
+        to={"/adminroutes/missions/missionList"}
+        className="seeMission flex justify-center items-center m-auto w-1/5 h-16 bg-orange-200 rounded-lg cursor-pointer"
+      >
+        Consulter
+      </Link>
+      <Link
+        to={"/adminroutes/inviterExtra"}
+        className="invitExtra flex justify-center items-center m-auto w-1/5 h-16 bg-orange-200 rounded-lg cursor-pointer"
+      >
+        Inviter cetExtra
+      </Link>
     </div>
   );
 };
