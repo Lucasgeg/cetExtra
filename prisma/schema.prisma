@@ -49,7 +49,7 @@ model PendingUserToMission {
   //mettre token en ID
   token       String   @id @map("_id")
   userMail    String
-  missionId   String   @unique
+  missionId   String
   createdAt   DateTime @default(now())
   missionName String
   place       String

@@ -37,7 +37,7 @@ const sendMail = (
   sgMail.setApiKey(process.env.KEY_SENDGRID);
 
   const sendGridMail = {
-    to: email,
+    to: email, // multiple recipient, ["email1","email2"]
     from: "contact@lvp-web.fr",
     templateId: "d-cad383b83a1a482690bf97c103aefc28",
     dynamic_template_data: {
@@ -52,7 +52,7 @@ const sendMail = (
   //envois du mail
   (async () => {
     try {
-      await sgMail.send(sendGridMail); // choisir quel const utiliser pour l'envois de mail
+      await sgMail.send(sendGridMail, true); // choisir quel const utiliser pour l'envois de mail
       console.log("invitation envoyée");
 
       return json({
@@ -77,6 +77,7 @@ export const sendPendingUserToMission = async (
   const allreadyIn = await prisma.pendingUserToMission.findFirst({
     where: { userMail, AND: { missionId } },
   });
+  //verif a faire au actionFunction ou loader
   if (allreadyIn)
     return json({ error: "User is allready on the pending List" });
 
@@ -111,7 +112,6 @@ export const getMissionByToken = async (token: string) => {
   const pendingMission = await prisma.pendingUserToMission.findUnique({
     where: { token },
   });
-  console.log(pendingMission);
 
   if (!pendingMission) return false;
   const missionId = pendingMission.missionId;
