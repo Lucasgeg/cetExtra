@@ -41,7 +41,6 @@ const Menu = () => {
           </Link>
           <div className="relative top-2 left-2">
             <SignedIn>
-              <UserButton /> <br />
               <div className="w-fit p-2 bg-orange-300 rounded-md">
                 <button onClick={() => signOut()}>Déconnexion</button>
               </div>

@@ -31,7 +31,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 const index = () => {
   return (
     <>
-      <div className="min-h-[90vh] w-full flex flex-col">
+      <div className="min-h-[70vh] w-full flex flex-col">
         <Welcome />
       </div>
     </>
@@ -44,7 +44,7 @@ const Welcome = () => {
   const { user, userFutureMissions } = useLoaderData<LoaderData>();
 
   return (
-    <div className="h-fit w-1/2 mx-auto p-5 text-center bg-slate-400 rounded-md mb-5">
+    <div className="h-fit w-1/2 mx-auto p-5 text-center bg-slate-400 rounded-md">
       <div>
         <img
           src={logo}
