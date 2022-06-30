@@ -49,6 +49,9 @@ const Menu = () => {
         </nav>
       ) : (
         <nav className="admin_Menu flex items-center w-full justify-around">
+          <SignedOut>
+            <RedirectToSignUp />
+          </SignedOut>
           <Link to={"/"} className="w-28 h-14 flex bg-orange-200 rounded-lg">
             <div className="m-auto">Accueil</div>
           </Link>
@@ -76,20 +79,17 @@ const Menu = () => {
           >
             <div className="m-auto">Profil</div>
           </Link>
-          <div className="absolute top-2 left-2">
-            <SignedIn>
-              <UserButton /> <br />
-              <div className="w-fit p-2 bg-orange-300 rounded-md">
-                <button
-                  onClick={() => {
-                    signOut();
-                  }}
-                >
-                  Déconnexion
-                </button>
-              </div>
-            </SignedIn>
-          </div>
+          <SignedIn>
+            <div className="w-fit p-2 bg-orange-300 rounded-md">
+              <button
+                onClick={() => {
+                  signOut();
+                }}
+              >
+                Déconnexion
+              </button>
+            </div>
+          </SignedIn>
         </nav>
       )}
     </div>

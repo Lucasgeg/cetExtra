@@ -1,29 +1,31 @@
-import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
+import { ActionFunction, Response } from "@remix-run/node";
+import { Form } from "@remix-run/react";
+import { streamToBuffer } from "~/utils/stream";
+import { generatePdf } from "../test";
 
-// Create styles
-const styles = StyleSheet.create({
-  page: {
-    flexDirection: "row",
-    backgroundColor: "#E4E4E4",
-  },
-  section: {
-    margin: 10,
-    padding: 10,
-    flexGrow: 1,
-  },
-});
+export const action: ActionFunction = async ({ request }) => {
+  const form = await request.formData();
+  const name = form.get("toto").toString();
+  // récupère l'id de l'user et la mission pour le contrat
+  // tu envoies les params à generatePdf
+  const myPdfStream = await generatePdf({ name });
+  const myPdfBuffer = await streamToBuffer(myPdfStream);
 
-// Create Document Component
-const MyDoc = () => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      <View style={styles.section}>
-        <Text>Section #1</Text>
-      </View>
-      <View style={styles.section}>
-        <Text>Section #2</Text>
-      </View>
-    </Page>
-  </Document>
-);
+  return new Response(myPdfBuffer, {
+    status: 200,
+    headers: {
+      "Content-Type": "application/pdf",
+    },
+  });
+};
+
+const MyDoc = () => {
+  return (
+    <Form method="post">
+      <input type="submit" value={"toto"} />
+      <input type="text" name="toto" />
+    </Form>
+  );
+};
+
 export default MyDoc;

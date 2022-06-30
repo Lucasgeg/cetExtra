@@ -5,7 +5,6 @@ import { Form, Link, useLoaderData } from "@remix-run/react";
 import { format } from "date-fns";
 import { useState } from "react";
 import MapComponent from "~/components/MapComponent";
-import Menu from "~/components/Menu";
 import { getMissionInformation, updateMission } from "~/utils/missions.server";
 import { getCurrentUser } from "~/utils/newAuth.server";
 import { disconnectToMission } from "~/utils/userMissions.server";
@@ -34,6 +33,7 @@ type User = {
 type LoaderData = {
   mission: Mission;
   user: User;
+  userStatut: Statut;
 };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -43,7 +43,6 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   const userStatut = consultingUser.statut;
   const mission = await getMissionInformation(missionId);
 
-  if (consultingUser?.statut == "USER") return redirect("/");
   const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
   if (!apiKey) return console.log("ApiKey is Needed!");
 
@@ -87,7 +86,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 const $missionId = () => {
-  const { mission, user } = useLoaderData<LoaderData>();
+  const { mission, user, userStatut } = useLoaderData<LoaderData>();
 
   const [updateMode, setUpdateMode] = useState(false);
   const handleClick = () => {
@@ -233,24 +232,26 @@ const $missionId = () => {
                   </td>
                   <td className="flex justify-around">
                     <Link to={`/userUpdate/${user.id}`}>👁</Link>
-                    <Form
-                      method="post"
-                      onSubmit={(e) => deleteValidationUserFromMission(e)}
-                    >
-                      <input type="hidden" name="userId" value={user.email} />
-                      <input
-                        type="hidden"
-                        name="missionId"
-                        value={mission.id}
-                      />
-                      <button
-                        type="submit"
-                        name="_action"
-                        value={"removeFromMission"}
+                    {userStatut !== "USER" && (
+                      <Form
+                        method="post"
+                        onSubmit={(e) => deleteValidationUserFromMission(e)}
                       >
-                        ❌
-                      </button>
-                    </Form>
+                        <input type="hidden" name="userId" value={user.email} />
+                        <input
+                          type="hidden"
+                          name="missionId"
+                          value={mission.id}
+                        />
+                        <button
+                          type="submit"
+                          name="_action"
+                          value={"removeFromMission"}
+                        >
+                          ❌
+                        </button>
+                      </Form>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -258,7 +259,11 @@ const $missionId = () => {
             <tfoot>
               <tr>
                 <th colSpan={2}>
-                  <Link to={"/adminroutes/inviterextra/"}>Inviter extra</Link>
+                  {userStatut !== "USER" ? (
+                    <Link to={"/adminroutes/inviterextra/"}>Inviter extra</Link>
+                  ) : (
+                    <p>Pensez au co-voiturage</p>
+                  )}
                 </th>
               </tr>
             </tfoot>

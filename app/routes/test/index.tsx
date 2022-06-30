@@ -1,7 +1,27 @@
-import { Page, Text, Document, StyleSheet } from "@react-pdf/renderer";
+import {
+  Page,
+  Text,
+  Document,
+  View,
+  renderToStream,
+} from "@react-pdf/renderer";
 
-const index = () => {
-  return <div></div>;
+// rajoute les champs dynamiques pour ton PDF
+type PdfProps = {
+  name: string;
 };
 
-export default index;
+const PdfDocument: React.FC<PdfProps> = ({ name }) => {
+  return (
+    <Document>
+      <Page size="A4">
+        <View>
+          <Text>{name}</Text>
+        </View>
+      </Page>
+    </Document>
+  );
+};
+
+export const generatePdf = async (props: PdfProps) =>
+  await renderToStream(<PdfDocument {...props} />);
