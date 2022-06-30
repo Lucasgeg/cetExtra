@@ -6,8 +6,13 @@ import sgMail from "@sendgrid/mail";
 import { format } from "date-fns";
 
 type pendingUserToMission = {
-  usermail: string;
+  token: string;
+  userMail: string;
   missionId: string;
+  createdAt: Date;
+  missionName: string;
+  place: string;
+  beginAt: Date;
 };
 
 type PendingMission = {
@@ -107,6 +112,19 @@ export const sendPendingUserToMission = async (
   //send mail to user
   sendMail(userMail, userFirstName, token, missionName, place, beginAtMail);
   return json({ message: "Invitation sended" });
+};
+export const getUserByToken = async (token: string) => {
+  const pendingMission = await prisma.pendingUserToMission.findUnique({
+    where: { token },
+  });
+
+  if (!pendingMission) return false;
+  const userMail = pendingMission.userMail;
+  const user = await prisma.user.findUnique({
+    where: { email: userMail },
+    select: { pendingToken: true, id: true },
+  });
+  return user;
 };
 export const getMissionByToken = async (token: string) => {
   const pendingMission = await prisma.pendingUserToMission.findUnique({
@@ -218,14 +236,14 @@ export const connectToMission = async (user: string, mission: string) => {
 };
 
 export const disconnectToMission = async (user: string, mission: string) => {
-  const userToConnect = await prisma.user.findUnique({
+  const userToDisconnect = await prisma.user.findUnique({
     where: { email: user },
   });
-  const missionToConnect = await prisma.missions.findUnique({
+  const missionToDisconnect = await prisma.missions.findUnique({
     where: { id: mission },
   });
 
-  if (!userToConnect || !missionToConnect)
+  if (!userToDisconnect || !missionToDisconnect)
     return json({ error: "Selected items are not valid" });
 
   const disconnect = await prisma.user.update({
@@ -236,4 +254,25 @@ export const disconnectToMission = async (user: string, mission: string) => {
   if (!disconnect)
     return json({ error: "Something went wrong on disconnection" });
   return json({ message: "User disconnected from the mission" });
+};
+export const pendingUserToMissionList = async () => {
+  const list = await prisma.pendingUserToMission.findMany();
+  return list;
+};
+export const deletePendingInvitation = async (token: string) => {
+  const user = await getUserByToken(token);
+
+  if (!user) return false;
+  const userId = user.id;
+  const userPendingTokenList = user.pendingToken;
+  const newTokenList = userPendingTokenList.filter(
+    (tokens) => tokens !== token
+  );
+  await prisma.user.update({
+    where: { id: userId },
+    data: { pendingToken: { set: newTokenList } },
+  });
+  return await prisma.pendingUserToMission.delete({
+    where: { token },
+  });
 };
