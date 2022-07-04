@@ -70,7 +70,10 @@ const Menu = () => {
           <Link to={"/"} className="w-28 h-14 flex bg-orange-200 rounded-lg">
             <div className="m-auto">Contrats</div>
           </Link>
-          <Link to={"/"} className="w-28 h-14 flex bg-orange-200 rounded-lg">
+          <Link
+            to={"/userRoutes/contact"}
+            className="w-28 h-14 flex bg-orange-200 rounded-lg"
+          >
             <div className="m-auto">Contact</div>
           </Link>
           <Link

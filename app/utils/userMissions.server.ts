@@ -1,31 +1,38 @@
-import { json, redirect } from "@remix-run/node";
-import { Missions, prisma } from "./prisma.server";
+import { json } from "@remix-run/node";
+import { prisma } from "./prisma.server";
 import crypto from "crypto";
-import { getMissionInformation } from "./missions.server";
 import sgMail from "@sendgrid/mail";
 import { format } from "date-fns";
 
-type pendingUserToMission = {
-  token: string;
-  userMail: string;
-  missionId: string;
-  createdAt: Date;
-  missionName: string;
-  place: string;
-  beginAt: Date;
-};
+export const contactMail = (
+  userMail: string,
+  userName: string,
+  userMessage: string
+) => {
+  sgMail.setApiKey(process.env.KEY_SENDGRID);
 
-type PendingMission = {
-  missionId: string;
-  missionName: string;
-  place: string;
-  beginAt: string;
-};
+  const sendGridMail = {
+    to: "contact@lvp-web.fr",
+    from: "contact@lvp-web.fr",
+    templateId: "d-632df0df23294d78a85b2694f90bd500",
+    dynamic_template_data: {
+      userMail,
+      userName,
+      userMessage,
+    },
+  };
+  try {
+    sgMail.send(sendGridMail);
+    console.log("Message envoyé");
+    return true;
+  } catch (error) {
+    console.log("Message non envoyé");
+    console.log(error.response.body.errors);
 
-type MailData = {
-  email: string;
-  token: string;
-  missionInformation: PendingMission;
+    return json({
+      message: "ERROR_WITH_SENDGRID",
+    });
+  }
 };
 
 const sendMail = (
@@ -72,6 +79,77 @@ const sendMail = (
     }
   })();
 };
+
+const userValidateMissionMail = (
+  userName: string,
+  missionName: string,
+  missionDate: string
+) => {
+  sgMail.setApiKey(process.env.KEY_SENDGRID);
+
+  const sendGridMail = {
+    to: "contact@lvp-web.fr", // multiple recipient, ["email1","email2"]
+    from: "contact@lvp-web.fr",
+    templateId: "d-8119a941b5e8486db725aad57e03d549",
+    dynamic_template_data: {
+      userName,
+      missionName,
+      missionDate,
+    },
+  };
+
+  //envois du mail
+
+  try {
+    sgMail.send(sendGridMail, true); // choisir quel const utiliser pour l'envois de mail
+    console.log("invitation envoyée");
+
+    return json({
+      message: "EMAIL_SENDED_SUCCESSFULLY",
+    });
+  } catch {
+    console.log("invitation non envoyée");
+
+    return json({
+      message: "ERROR_WITH_SENDGRID",
+    });
+  }
+};
+const userRefuseMissionMail = (
+  userName: string,
+  missionName: string,
+  missionDate: string
+) => {
+  sgMail.setApiKey(process.env.KEY_SENDGRID);
+
+  const sendGridMail = {
+    to: "contact@lvp-web.fr", // multiple recipient, ["email1","email2"]
+    from: "contact@lvp-web.fr",
+    templateId: "d-0aae0f8dc89c41b3a68a274224464354",
+    dynamic_template_data: {
+      userName,
+      missionName,
+      missionDate,
+    },
+  };
+
+  //envois du mail
+
+  try {
+    sgMail.send(sendGridMail, true); // choisir quel const utiliser pour l'envois de mail
+
+    return json({
+      message: "EMAIL_SENDED_SUCCESSFULLY",
+    });
+  } catch {
+    console.log("invitation non envoyée");
+
+    return json({
+      message: "ERROR_WITH_SENDGRID",
+    });
+  }
+};
+
 export const sendPendingUserToMission = async (
   userMail: string,
   missionId: string
@@ -166,6 +244,12 @@ export const validateMissionToken = async (userMail: string, token: string) => {
   const pendingUserToMission = await prisma.pendingUserToMission.findFirst({
     where: { userMail, AND: { token } },
   });
+  const missionName = pendingUserToMission.missionName;
+  const missionDate = format(
+    new Date(pendingUserToMission.beginAt),
+    "dd/MM/yyyy à hh:mm"
+  );
+
   await connectToMission(
     pendingUserToMission.userMail,
     pendingUserToMission.missionId
@@ -174,9 +258,14 @@ export const validateMissionToken = async (userMail: string, token: string) => {
     where: { email: userMail },
     data: { pendingToken: { set: userPendingTokenArrayPullUsedToken } },
   });
+  const user = await prisma.user.findUnique({ where: { email: userMail } });
+  const userName = user.firstName + " " + user.lastName;
+
+  userValidateMissionMail(userName, missionName, missionDate);
   await prisma.pendingUserToMission.delete({
     where: { token },
   });
+  //récup user Name + firstName && récup missionName+ Mission Date && send Mail
   console.log("User is now connected");
 
   //redirect validatePage avec mission
@@ -196,11 +285,15 @@ export const refuseMissionToken = async (userMail: string, token: string) => {
   });
   const userTokenRes = await prisma.user.findUnique({
     where: { email: userMail },
-    select: { pendingToken: true },
+    select: { pendingToken: true, firstName: true, lastName: true },
   });
   const userPendingTokenArrayPullUsedToken =
     userTokenRes.pendingToken &&
     userTokenRes.pendingToken.filter((tokens) => tokens !== token);
+
+  const pendingUserToMission = await prisma.pendingUserToMission.findFirst({
+    where: { userMail, AND: { token } },
+  });
 
   if (!haveTheToken.length) return json({ message: "not found", status: 404 });
   console.log("token founded");
@@ -208,6 +301,13 @@ export const refuseMissionToken = async (userMail: string, token: string) => {
     where: { email: userMail },
     data: { pendingToken: userPendingTokenArrayPullUsedToken },
   });
+  const userName = userTokenRes.firstName + " " + userTokenRes.lastName;
+  const missionName = pendingUserToMission.missionName;
+  const missionDate = format(
+    new Date(pendingUserToMission.beginAt),
+    "dd/MM/yyyy à hh:mm"
+  );
+  userRefuseMissionMail(userName, missionName, missionDate);
   await prisma.pendingUserToMission.delete({
     where: { token },
   });

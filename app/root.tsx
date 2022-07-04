@@ -1,5 +1,6 @@
 import { ClerkApp, ClerkCatchBoundary } from "@clerk/remix";
 import { rootAuthLoader } from "@clerk/remix/ssr.server";
+import { Statut } from "@prisma/client";
 import { json, LoaderFunction, MetaFunction, redirect } from "@remix-run/node";
 import {
   Links,
@@ -9,6 +10,7 @@ import {
   Scripts,
   ScrollRestoration,
   useCatch,
+  useLoaderData,
 } from "@remix-run/react";
 import ErrorComponent from "./components/ErrorComponent";
 import Footer from "./components/Footer";
@@ -34,10 +36,7 @@ export const loader: LoaderFunction = (args) => {
     args,
     async ({ request }) => {
       const { userId } = request.auth;
-      const user = await getCurrentUser(request);
-      if (!user) return redirect("/");
-      const userStatut = user.statut;
-
+      const userStatut = userId ? (await getCurrentUser(request)).statut : null;
       return {
         userId,
         userStatut,
@@ -65,8 +64,11 @@ const Boundary = () => {
   );
 };
 export const CatchBoundary = ClerkCatchBoundary(Boundary); /* 2 */
-
+type LoaderData = {
+  userId: string;
+};
 function App() {
+  const { userId } = useLoaderData<LoaderData>();
   return (
     <html lang="en">
       <head>
@@ -75,7 +77,7 @@ function App() {
       </head>
       <body className="">
         <div className="min-h-[90vh]">
-          <Menu />
+          {userId && <Menu />}
           <div className="min-h-[70vh]">
             <Outlet />
           </div>

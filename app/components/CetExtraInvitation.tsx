@@ -1,7 +1,7 @@
 import type { Missions, User } from "@prisma/client";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UserCard from "./UserCard";
 type LoaderData = {
   userList: User[];
@@ -10,7 +10,7 @@ type LoaderData = {
 
 const CetExtraInvitation = () => {
   const [selectedUser, setSelectedUser] = useState([]);
-  const [selectedMission, setSelectedMission] = useState("");
+  const [selectedMission, setSelectedMission] = useState<Missions>(null);
   const actionData = useActionData();
   return (
     <>
@@ -21,7 +21,7 @@ const CetExtraInvitation = () => {
       )}
       <Form method="post" className="">
         <div className="w-11/12 mx-auto flex">
-          <div className="left w-5/6">
+          <div className="left w-4/6">
             <Users
               selectedUser={selectedUser}
               setSelectedUser={setSelectedUser}
@@ -32,7 +32,7 @@ const CetExtraInvitation = () => {
               selectedMission={selectedMission}
               setSelectedMission={setSelectedMission}
             />
-            <input type="hidden" name="missionId" value={selectedMission} />
+            <input type="hidden" name="missionId" value={selectedMission?.id} />
           </div>
         </div>
         <div className="w-full text-center">
@@ -92,11 +92,17 @@ const Users = ({ selectedUser, setSelectedUser }: userPropsType) => {
     </ul>
   );
 };
-
-const MissionTable = ({ selectedMission, setSelectedMission }) => {
+type MissionPropsType = {
+  selectedMission: Missions;
+  setSelectedMission: React.Dispatch<React.SetStateAction<Missions>>;
+};
+const MissionTable = ({
+  selectedMission,
+  setSelectedMission,
+}: MissionPropsType) => {
   const { futureMissions } = useLoaderData<LoaderData>();
   return (
-    <table className="w-full bg-white">
+    <table className="w-full bg-white max-h-full overflow-auto">
       <thead>
         <tr>
           <th>Mission</th>
@@ -108,12 +114,17 @@ const MissionTable = ({ selectedMission, setSelectedMission }) => {
           <tr
             key={mission.id}
             className={`text-sm cursor-pointer ${
-              selectedMission == mission.id && "bg-slate-400"
+              selectedMission?.id == mission.id && "bg-slate-400"
             }`}
-            onClick={() => setSelectedMission(mission.id)}
+            onClick={() => setSelectedMission(mission)}
           >
-            <td>{mission.missionName}</td>
-            <td>{format(new Date(mission.beginAt), "dd/MM/yyyy - HH:mm")}</td>
+            {console.log(
+              new Date(mission.beginAt).toISOString().split(".")[0] + "Z"
+            )}
+            <td className="h-6">{mission.missionName}</td>
+            <td className="h-6">
+              {format(new Date(mission.beginAt), "dd/MM/yyyy - HH:mm")}
+            </td>
           </tr>
         ))}
       </tbody>

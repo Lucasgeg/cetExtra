@@ -23,9 +23,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   if (isNew) return redirect("/first-connexion");
   const user = await getCurrentUser(request);
   const userFutureMissions = (await userMissions(user.id)).futureMisions;
-  const userId = user.id;
-  const userStatut = user.statut;
-  return json({ user, userStatut, userFutureMissions, clerkUserId, userId });
+  return json({ user, userFutureMissions });
 };
 
 const index = () => {
