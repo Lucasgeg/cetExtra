@@ -1,7 +1,12 @@
 import type { Missions, User } from "@prisma/client";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useTransition,
+} from "@remix-run/react";
 import { format } from "date-fns";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import UserCard from "./UserCard";
 type LoaderData = {
   userList: User[];
@@ -12,6 +17,18 @@ const CetExtraInvitation = () => {
   const [selectedUser, setSelectedUser] = useState([]);
   const [selectedMission, setSelectedMission] = useState<Missions>(null);
   const actionData = useActionData();
+
+  const sendStatut = useTransition();
+  const sending =
+    sendStatut.state === "submitting" &&
+    sendStatut.submission.formData.get("_action") === "sendInvitation";
+  const formRef = useRef();
+  useEffect(() => {
+    if (!sending && formRef?.current) {
+      setSelectedUser([]);
+      setSelectedMission(null);
+    }
+  }, [sending]);
   return (
     <>
       {actionData?.errors && (
@@ -19,7 +36,7 @@ const CetExtraInvitation = () => {
           Sélectionner au moins un user et une mission
         </p>
       )}
-      <Form method="post" className="">
+      <Form method="post" ref={formRef}>
         <div className="w-11/12 mx-auto flex">
           <div className="left w-4/6">
             <Users
@@ -37,7 +54,10 @@ const CetExtraInvitation = () => {
         </div>
         <div className="w-full text-center">
           <button
+            disabled={sending}
             type="submit"
+            name={"_action"}
+            value={"sendInvitation"}
             className="inline-block px-6 py-2 border-2 border-gray-800 text-white font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out mt-4"
           >
             Inviter
@@ -57,7 +77,7 @@ type userPropsType = {
 
 const Users = ({ selectedUser, setSelectedUser }: userPropsType) => {
   const { userList } = useLoaderData<LoaderData>();
-
+  const actionData = useActionData();
   const addOrRemoveOnArray = (email) => {
     const userIsOnArray = selectedUser.includes(email);
     if (!userIsOnArray) {
@@ -83,6 +103,7 @@ const Users = ({ selectedUser, setSelectedUser }: userPropsType) => {
               onChange={(event) => addOrRemoveOnArray(event.target.value)}
               hidden={true}
             />
+            {actionData?.errorUserOnMission && "toto"}
             <label htmlFor={user.email}>
               <UserCard {...user} />
             </label>
@@ -118,9 +139,9 @@ const MissionTable = ({
             }`}
             onClick={() => setSelectedMission(mission)}
           >
-            {console.log(
+            {/* {console.log(
               new Date(mission.beginAt).toISOString().split(".")[0] + "Z"
-            )}
+            )} */}
             <td className="h-6">{mission.missionName}</td>
             <td className="h-6">
               {format(new Date(mission.beginAt), "dd/MM/yyyy - HH:mm")}

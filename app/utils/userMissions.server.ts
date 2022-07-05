@@ -35,6 +35,19 @@ export const contactMail = (
   }
 };
 
+export const userIsOnTheMission = async (
+  userMail: string,
+  missionId: string
+) => {
+  if (typeof userMail !== "string") return;
+  const allreadyIn = await prisma.pendingUserToMission.findFirst({
+    where: { userMail, AND: { missionId } },
+  });
+  //verif a faire au actionFunction ou loader
+  if (allreadyIn) return true;
+  return false;
+};
+
 const sendMail = (
   email: string,
   userFirstName: string,
@@ -156,13 +169,6 @@ export const sendPendingUserToMission = async (
 ) => {
   const token = crypto.randomBytes(16).toString("hex");
   //verif si mission déjà proposé ‼ NE FONCTIONNE PAS--- A VOIR
-  if (typeof userMail !== "string") return;
-  const allreadyIn = await prisma.pendingUserToMission.findFirst({
-    where: { userMail, AND: { missionId } },
-  });
-  //verif a faire au actionFunction ou loader
-  if (allreadyIn)
-    return json({ error: "User is allready on the pending List" });
 
   const userFirstName = (
     await prisma.user.findUnique({ where: { email: userMail } })
@@ -271,13 +277,7 @@ export const validateMissionToken = async (userMail: string, token: string) => {
   //redirect validatePage avec mission
   return true;
 };
-//function for rendering background on select but how???
-export const userPendingInvitation = async (userMail: string) => {
-  const pendingInvitation = await prisma.pendingUserToMission.findMany({
-    where: { userMail },
-  });
-  return pendingInvitation;
-};
+
 export const refuseMissionToken = async (userMail: string, token: string) => {
   const haveTheToken = await prisma.user.findMany({
     where: { email: userMail, AND: { pendingToken: { has: token } } },
@@ -315,6 +315,14 @@ export const refuseMissionToken = async (userMail: string, token: string) => {
 
   return true;
 };
+//function for rendering background on select but how???
+export const userPendingInvitation = async (userMail: string) => {
+  const pendingInvitation = await prisma.pendingUserToMission.findMany({
+    where: { userMail },
+  });
+  return pendingInvitation;
+};
+
 export const connectToMission = async (user: string, mission: string) => {
   const userToConnect = await prisma.user.findUnique({
     where: { email: user },

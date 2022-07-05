@@ -7,7 +7,7 @@ const UserList = () => {
     <ul className="grid grid-cols-1 md:grid-cols-9 gap-2 auto-rows-auto">
       {/* TODO: choix par role/workedtime etc... */}
       {userList.map((u) => (
-        <Link to={`/userUpdate/${u.id}`} key={u.id}>
+        <Link to={`/profil/${u.id}`} key={u.id}>
           <li key={u.email} className="px-2">
             <UserCard {...u} />
           </li>

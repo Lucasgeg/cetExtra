@@ -3,8 +3,10 @@ import { json, redirect } from "@remix-run/node";
 import CetExtraInvitation from "~/components/CetExtraInvitation";
 import { getMissions } from "~/utils/missions.server";
 import { getCurrentUser } from "~/utils/newAuth.server";
-import type { Missions } from "~/utils/prisma.server";
-import { sendPendingUserToMission } from "~/utils/userMissions.server";
+import {
+  sendPendingUserToMission,
+  userIsOnTheMission,
+} from "~/utils/userMissions.server";
 import { getUserList } from "~/utils/users.server";
 
 export const action: ActionFunction = async ({ request }) => {
@@ -16,12 +18,17 @@ export const action: ActionFunction = async ({ request }) => {
   if (!userMails || !missionId || typeof missionId !== "string") {
     return json({ errors: "Merci de sélectionner un user et une mission" });
   }
+  //verif si user es déjà dans la mission
+
   return userMails.map(async (userMail) => {
     if (typeof userMail !== "string")
-      throw new Error(
-        "UserMail is not a string // actionFunction sendPendingUserToMission"
-      );
+      return json({ alertMessage: "Erreur dans l'envois des invitations" });
+    if (userIsOnTheMission(userMail.toString(), missionId))
+      return json({
+        errorUserOnMission: true,
+      });
     await sendPendingUserToMission(userMail, missionId);
+    return json({ alertMessage: "Invitations envoyées avec succès" });
   });
 };
 
