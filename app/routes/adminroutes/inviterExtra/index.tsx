@@ -1,11 +1,12 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
+import { useEffect } from "react";
 import CetExtraInvitation from "~/components/CetExtraInvitation";
 import { getMissions } from "~/utils/missions.server";
 import { getCurrentUser } from "~/utils/newAuth.server";
 import {
   sendPendingUserToMission,
-  userIsOnTheMission,
+  userIsOnTheMissionPendingList,
 } from "~/utils/userMissions.server";
 import { getUserList } from "~/utils/users.server";
 
@@ -14,22 +15,31 @@ export const action: ActionFunction = async ({ request }) => {
 
   const userMails = form.getAll("userMail");
   const missionId = form.get("missionId").toString();
-
   if (!userMails || !missionId || typeof missionId !== "string") {
     return json({ errors: "Merci de sélectionner un user et une mission" });
   }
   //verif si user es déjà dans la mission
+  const errorName = [];
+  await Promise.all(
+    userMails.map(async (userMail) => {
+      if (typeof userMail !== "string")
+        return json({ alertMessage: "Erreur dans l'envois des invitations" });
+      const userOnPendingList = await userIsOnTheMissionPendingList(
+        userMail,
+        missionId
+      );
+      if (userOnPendingList) return errorName.push(userOnPendingList);
 
-  return userMails.map(async (userMail) => {
-    if (typeof userMail !== "string")
-      return json({ alertMessage: "Erreur dans l'envois des invitations" });
-    if (userIsOnTheMission(userMail.toString(), missionId))
+      /* if (userIsOnTheMission(userMail.toString(), missionId))
       return json({
         errorUserOnMission: true,
-      });
-    await sendPendingUserToMission(userMail, missionId);
-    return json({ alertMessage: "Invitations envoyées avec succès" });
-  });
+      }); */
+      return await sendPendingUserToMission(userMail, missionId);
+    })
+  );
+  console.log(errorName);
+  if (errorName.length) return true;
+  return json({ userMails, showModal: true });
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {

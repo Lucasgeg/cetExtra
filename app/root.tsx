@@ -36,7 +36,9 @@ export const loader: LoaderFunction = (args) => {
     args,
     async ({ request }) => {
       const { userId } = request.auth;
-      const userStatut = userId ? (await getCurrentUser(request)).statut : null;
+      const userStatut = userId
+        ? (await getCurrentUser(request)).statut
+        : "USER";
       return {
         userId,
         userStatut,

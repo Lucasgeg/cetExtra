@@ -35,16 +35,23 @@ export const contactMail = (
   }
 };
 
-export const userIsOnTheMission = async (
+export const userIsOnTheMissionPendingList = async (
   userMail: string,
   missionId: string
 ) => {
-  if (typeof userMail !== "string") return;
   const allreadyIn = await prisma.pendingUserToMission.findFirst({
     where: { userMail, AND: { missionId } },
   });
   //verif a faire au actionFunction ou loader
-  if (allreadyIn) return true;
+  if (allreadyIn) {
+    const user = await prisma.user.findUnique({
+      where: { email: userMail },
+      select: { firstName: true, lastName: true },
+    });
+    const userName = user.firstName + " " + user.lastName;
+    return userName;
+  }
+
   return false;
 };
 

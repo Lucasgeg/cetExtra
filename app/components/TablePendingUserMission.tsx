@@ -1,6 +1,7 @@
 import type { PendingUserToMission } from "@prisma/client";
-import { Form, useLoaderData, useSubmit } from "@remix-run/react";
+import { Form, useLoaderData, useTransition } from "@remix-run/react";
 import { format } from "date-fns";
+import { useEffect, useRef } from "react";
 
 type LoaderData = {
   pendingUserToMission: PendingUserToMission[];
@@ -8,25 +9,37 @@ type LoaderData = {
 
 const TablePendingUserMission = () => {
   const { pendingUserToMission } = useLoaderData<LoaderData>();
-
+  const sendStatut = useTransition();
+  const sending =
+    sendStatut.state === "submitting" &&
+    sendStatut.submission.formData.get("_action") === "supprimer";
+  const formRef = useRef();
+  useEffect(() => {
+    if (!sending && formRef?.current) {
+      formRef?.current?.reset();
+    }
+  }, [sending]);
   return (
-    <div>
-      <div className="relative flex flex-col w-3/4 mx-auto min-w-0 mb-0 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-xl bg-clip-border max-[70vh]">
-        <div className="p-6 pb-0 mb-0 bg-white rounded-t-2xl text-xl text-center">
-          <h6>cet Extra en attente</h6>
-        </div>
-        <div className="flex-auto px-0 pt-0 pb-2">
-          <div className="p-0 overflow-x-auto">
-            <Form method="post">
+    <Form method="post" ref={formRef}>
+      <div>
+        <div className="relative flex flex-col w-3/4 mx-auto min-w-0 mb-0 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-xl bg-clip-border max-[70vh]">
+          <div className="p-6 pb-0 mb-0 bg-white rounded-t-2xl text-xl text-center">
+            <h6>cet Extra en attente</h6>
+          </div>
+          <div className="flex-auto px-0 pt-0 pb-2">
+            <div className="p-0 overflow-x-auto">
               <table className="items-center w-full mb-0 align-top border-gray-200 text-slate-500">
                 <thead className="align-bottom">
                   <tr>
                     <td colSpan={3} className={"text-right"}>
-                      <input
+                      <button
                         type={"submit"}
+                        name="_action"
                         value="Supprimer"
                         className="mr-3 inline-block px-6 py-3 font-bold text-center bg-black uppercase align-middle transition-all rounded-lg cursor-pointer leading-pro text-xs ease-soft-in tracking-tight-soft shadow-soft-md bg-150 bg-x-25 hover:scale-102 active:opacity-85 hover:shadow-soft-xs text-white hover:text-red-300"
-                      />
+                      >
+                        Supprimer
+                      </button>
                     </td>
                   </tr>
                   <tr>
@@ -84,20 +97,23 @@ const TablePendingUserMission = () => {
                 <tfoot>
                   <tr>
                     <td colSpan={3} className={"text-right"}>
-                      <input
+                      <button
                         type={"submit"}
+                        name="_action"
                         value="Supprimer"
                         className="mr-3 inline-block px-6 py-3 font-bold text-center bg-black uppercase align-middle transition-all rounded-lg cursor-pointer leading-pro text-xs ease-soft-in tracking-tight-soft shadow-soft-md bg-150 bg-x-25 hover:scale-102 active:opacity-85 hover:shadow-soft-xs text-white hover:text-red-300"
-                      />
+                      >
+                        Supprimer
+                      </button>
                     </td>
                   </tr>
                 </tfoot>
               </table>
-            </Form>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Form>
   );
 };
 

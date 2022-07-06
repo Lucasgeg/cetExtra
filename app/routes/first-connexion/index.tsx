@@ -94,8 +94,8 @@ const FirstConnectForm = () => {
   const actionData = useActionData<ActionData>();
 
   const [formData, setFormData] = useState({
-    firstName: user.firstName && user.firstName,
-    lastName: user.lastName && user.lastName,
+    firstName: user?.firstName ? user.firstName : "",
+    lastName: user.lastName ? user.lastName : "",
     birthday: "",
     birthplace: "",
     email: user.emailAddresses && user.emailAddresses[0].emailAddress,

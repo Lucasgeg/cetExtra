@@ -20,7 +20,7 @@ model User {
   birthplace   String
   pendingToken String[]
   role         Role       @default(SALLE)
-  statut       Statut     @default(ADMIN)
+  statut       Statut     @default(USER)
   //mission relation many to many a faire plusieur user on la meme mission et vice verca
   missionIDs   String[]   @db.ObjectId
   missions     Missions[] @relation(fields: [missionIDs], references: [id])
