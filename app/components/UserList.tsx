@@ -8,7 +8,7 @@ const UserList = () => {
       {/* TODO: choix par role/workedtime etc... */}
       {userList.map((u) => (
         <Link to={`/profil/${u.id}`} key={u.id}>
-          <li key={u.email} className="px-2">
+          <li key={u.email} className="">
             <UserCard {...u} />
           </li>
         </Link>

@@ -10,13 +10,14 @@ import {
 import type { Statut } from "@prisma/client";
 import { Link, useLoaderData } from "@remix-run/react";
 type LoaderData = {
-  userStatut: Statut;
+  userStatut: Statut | null;
   userId: string;
 };
 const Menu = () => {
   const { userId, userStatut } = useLoaderData<LoaderData>();
   const { signOut } = useClerk();
 
+  if (!userStatut) return null;
   return (
     <div className="pb-6">
       <SignedOut>

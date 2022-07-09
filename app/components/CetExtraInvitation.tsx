@@ -15,11 +15,17 @@ type LoaderData = {
   futureMissions: Missions[];
 };
 
+type ActionType = {
+  errors: string;
+  errorName: string[];
+  showModal: boolean;
+};
+
 const CetExtraInvitation = () => {
   const [selectedUser, setSelectedUser] = useState([]);
   const [selectedMission, setSelectedMission] = useState<Missions>();
   const [showModal, setShowModal] = useState(false);
-  const actionData = useActionData();
+  const actionData = useActionData<ActionType>();
 
   const sendStatut = useTransition();
   const sending =
@@ -38,7 +44,12 @@ const CetExtraInvitation = () => {
       {actionData?.errors && (
         <p className="text-center text-white">{actionData.errors}</p>
       )}
-
+      {actionData?.errorName && (
+        <p className="text-center text-white w-1/2 mx-auto">
+          {actionData.errorName.join(", ")} est déjà présent dans la liste
+          d'attente ou sur la mission
+        </p>
+      )}
       {showModal && (
         <>
           <Modal
@@ -105,7 +116,7 @@ const Users = ({ selectedUser, setSelectedUser }: userPropsType) => {
 
         return (
           <div
-            className={"h-44 pt-2 " + (selected && " bg-white")}
+            className={"h-44 pt-2 max-w-[105px] " + (selected && " bg-white")}
             key={user.id}
           >
             <input

@@ -7,7 +7,6 @@ import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
-import Menu from "~/components/Menu";
 import { getCurrentUser } from "~/utils/newAuth.server";
 import { disconnectToMission } from "~/utils/userMissions.server";
 import {
@@ -22,6 +21,8 @@ type User = {
   firstName: string | null;
   lastName: string | null;
   email: string | null;
+  picture: string | null;
+  personnalAddress: string | null;
   role: Role;
   statut: Statut;
   birthday: string | null;
@@ -163,7 +164,9 @@ export default function userUpdate() {
           Information de: {user.firstName} {user.lastName}
         </h2>
         {/* TODO photo à récup de clerk */}
-        <div className="PhotoAFaire mx-auto w-32 h-32 bg-white rounded-full mb-5"></div>
+        <div className="PhotoAFaire mx-auto w-32 h-32 bg-white rounded-full mb-5">
+          <img src={user.picture} alt="profilePicture" />
+        </div>
         {data?.error ? <p>{data?.error} </p> : null}
         <div className="flex">
           <div className="w-1/2">

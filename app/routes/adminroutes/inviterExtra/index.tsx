@@ -6,6 +6,7 @@ import { getMissions } from "~/utils/missions.server";
 import { getCurrentUser } from "~/utils/newAuth.server";
 import {
   sendPendingUserToMission,
+  userIsAllreadyOnTheMission,
   userIsOnTheMissionPendingList,
 } from "~/utils/userMissions.server";
 import { getUserList } from "~/utils/users.server";
@@ -29,7 +30,11 @@ export const action: ActionFunction = async ({ request }) => {
         missionId
       );
       if (userOnPendingList) return errorName.push(userOnPendingList);
-
+      const userAllreadyOnMission = await userIsAllreadyOnTheMission(
+        userMail,
+        missionId
+      );
+      if (userAllreadyOnMission) return errorName.push(userAllreadyOnMission);
       /* if (userIsOnTheMission(userMail.toString(), missionId))
       return json({
         errorUserOnMission: true,
@@ -38,7 +43,7 @@ export const action: ActionFunction = async ({ request }) => {
     })
   );
   console.log(errorName);
-  if (errorName.length) return true;
+  if (errorName.length > 0) return json({ errorName });
   return json({ userMails, showModal: true });
 };
 

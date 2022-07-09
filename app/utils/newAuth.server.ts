@@ -1,6 +1,6 @@
 import { getAuth } from "@clerk/remix/ssr.server";
 import { json, redirect } from "@remix-run/node";
-import { prisma } from "./prisma.server";
+import { prisma, Role } from "./prisma.server";
 
 type TypeData = {
   email: string;
@@ -9,6 +9,9 @@ type TypeData = {
   birthplace: string;
   firstName: string;
   lastName: string;
+  picture: string;
+  personnalAdress: string;
+  role: string;
 };
 export const getUserId = async (request) => {
   const { userId } = await getAuth(request);
@@ -23,6 +26,7 @@ export const getCurrentUser = async (request) => {
       where: { authId },
       select: {
         id: true,
+        authId: true,
         email: true,
         birthplace: true,
         birthday: true,
@@ -61,7 +65,9 @@ export const createNewUser = async (form: TypeData) => {
   const lastName = form.lastName.trim();
   const birthplace = form.birthplace.toString().toLowerCase().trim();
   const birthday = form.birthday.toString().toLowerCase().trim();
-
+  const picture = form.picture.toString().toLowerCase().trim();
+  const personnalAddress = form.personnalAdress.toString().toLowerCase().trim();
+  const roleString = form.role;
   const validEmailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
   if (validEmailRegex.test(email) == false) {
     return json({ error: "Incorrect email format" });
@@ -70,7 +76,33 @@ export const createNewUser = async (form: TypeData) => {
     console.log("not created");
     return;
   }
-  const data = { email, authId, firstName, lastName, birthplace, birthday };
+  let role;
+  switch (roleString) {
+    case "SALLE": {
+      role = Role.SALLE;
+      break;
+    }
+    case "CUISINE": {
+      role = Role.CUISINE;
+      break;
+    }
+    default: {
+      return json({ error: "Role Switch Error" });
+    }
+  }
+  const data = {
+    email,
+    authId,
+    firstName,
+    lastName,
+    birthplace,
+    birthday,
+    picture,
+    personnalAddress,
+    role,
+  };
+  console.log(data);
+
   const newUser = await prisma.user.create({
     data,
   });

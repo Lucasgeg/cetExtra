@@ -54,7 +54,17 @@ export const userIsOnTheMissionPendingList = async (
 
   return false;
 };
-
+export const userIsAllreadyOnTheMission = async (userMail, missionId) => {
+  const userIsOnTheMission = await prisma.user.findFirst({
+    where: { email: userMail, AND: { missionIDs: { has: missionId } } },
+  });
+  if (userIsOnTheMission) {
+    const userName =
+      userIsOnTheMission.firstName + " " + userIsOnTheMission.lastName;
+    return userName;
+  }
+  return false;
+};
 const sendMail = (
   email: string,
   userFirstName: string,
@@ -170,6 +180,23 @@ const userRefuseMissionMail = (
   }
 };
 
+export const toto = async (userMail: string, missionId: string) => {
+  const token = crypto.randomBytes(16).toString("hex");
+  //verif si mission déjà proposé ‼ NE FONCTIONNE PAS--- A VOIR
+
+  await prisma.pendingUserToMission.create({
+    data: {
+      beginAt: new Date(),
+      token,
+      missionId,
+      userMail,
+      missionName: "toto",
+      place: "placeTest",
+    },
+  });
+  return true;
+};
+
 export const sendPendingUserToMission = async (
   userMail: string,
   missionId: string
@@ -191,10 +218,6 @@ export const sendPendingUserToMission = async (
   );
   const beginAt = missionInfos.beginAt;
   const missionData = { missionId, missionName, place, beginAt };
-  await prisma.user.update({
-    where: { email: userMail },
-    data: { pendingToken: { push: token } },
-  });
 
   await prisma.pendingUserToMission.create({
     data: { userMail, ...missionData, token },
@@ -241,74 +264,54 @@ export const validateMissionToken = async (userMail: string, token: string) => {
   console.log("token founded"); */
 
   const userHaveToken = await prisma.user.findFirst({
-    where: { email: userMail, AND: { pendingToken: { has: token } } },
+    where: {
+      email: userMail,
+      AND: { pendingToken: { every: { token: { contains: token } } } },
+    },
   });
-  if (!userHaveToken) return false;
+  if (!userHaveToken) return console.log("pas de token");
   console.log("He have the token");
+  try {
+    const missionToConnect = await prisma.pendingUserToMission.findFirst({
+      where: { token },
+    });
+    console.log(missionToConnect.missionId);
 
-  const userTokenRes = await prisma.user.findUnique({
-    where: { email: userMail },
-    select: { pendingToken: true },
-  });
-  const userPendingTokenArrayPullUsedToken =
-    userTokenRes.pendingToken &&
-    userTokenRes.pendingToken.filter((tokens) => tokens !== token);
+    await connectToMission(userMail, missionToConnect.missionId);
 
-  const pendingUserToMission = await prisma.pendingUserToMission.findFirst({
-    where: { userMail, AND: { token } },
-  });
-  const missionName = pendingUserToMission.missionName;
-  const missionDate = format(
-    new Date(pendingUserToMission.beginAt),
-    "dd/MM/yyyy à hh:mm"
-  );
+    const missionName = missionToConnect.missionName;
+    const missionDate = format(
+      new Date(missionToConnect.beginAt),
+      "dd/MM/yyyy à hh:mm"
+    );
+    const user = await prisma.user.findUnique({ where: { email: userMail } });
+    const userName = user.firstName + " " + user.lastName;
 
-  await connectToMission(
-    pendingUserToMission.userMail,
-    pendingUserToMission.missionId
-  );
-  await prisma.user.update({
-    where: { email: userMail },
-    data: { pendingToken: { set: userPendingTokenArrayPullUsedToken } },
-  });
-  const user = await prisma.user.findUnique({ where: { email: userMail } });
-  const userName = user.firstName + " " + user.lastName;
-
-  userValidateMissionMail(userName, missionName, missionDate);
-  await prisma.pendingUserToMission.delete({
-    where: { token },
-  });
-  //récup user Name + firstName && récup missionName+ Mission Date && send Mail
-  console.log("User is now connected");
-
-  //redirect validatePage avec mission
-  return true;
+    userValidateMissionMail(userName, missionName, missionDate);
+    await prisma.pendingUserToMission.delete({
+      where: { token },
+    });
+    return true;
+  } catch (error) {
+    console.log("error on connection to mission");
+    return false;
+  }
 };
 
 export const refuseMissionToken = async (userMail: string, token: string) => {
-  const haveTheToken = await prisma.user.findMany({
-    where: { email: userMail, AND: { pendingToken: { has: token } } },
-    select: { pendingToken: true },
+  const userHaveToken = await prisma.user.findFirst({
+    where: {
+      email: userMail,
+      AND: { pendingToken: { every: { token: { contains: token } } } },
+    },
   });
-  const userTokenRes = await prisma.user.findUnique({
-    where: { email: userMail },
-    select: { pendingToken: true, firstName: true, lastName: true },
-  });
-  const userPendingTokenArrayPullUsedToken =
-    userTokenRes.pendingToken &&
-    userTokenRes.pendingToken.filter((tokens) => tokens !== token);
-
   const pendingUserToMission = await prisma.pendingUserToMission.findFirst({
     where: { userMail, AND: { token } },
   });
 
-  if (!haveTheToken.length) return json({ message: "not found", status: 404 });
+  if (!userHaveToken) return json({ message: "not found", status: 404 });
   console.log("token founded");
-  await prisma.user.update({
-    where: { email: userMail },
-    data: { pendingToken: userPendingTokenArrayPullUsedToken },
-  });
-  const userName = userTokenRes.firstName + " " + userTokenRes.lastName;
+  const userName = userHaveToken.firstName + " " + userHaveToken.lastName;
   const missionName = pendingUserToMission.missionName;
   const missionDate = format(
     new Date(pendingUserToMission.beginAt),
@@ -378,15 +381,6 @@ export const deletePendingInvitation = async (token: string) => {
   const user = await getUserByToken(token);
 
   if (!user) return false;
-  const userId = user.id;
-  const userPendingTokenList = user.pendingToken;
-  const newTokenList = userPendingTokenList.filter(
-    (tokens) => tokens !== token
-  );
-  await prisma.user.update({
-    where: { id: userId },
-    data: { pendingToken: { set: newTokenList } },
-  });
   return await prisma.pendingUserToMission.delete({
     where: { token },
   });

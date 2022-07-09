@@ -18,7 +18,7 @@ const UserCard = (userInfo: User) => {
       className="userCard w-fit rounded-md flex flex-col p-2 mx-auto h-40"
       key={userInfo.id}
     >
-      <div className="PhotoAFaire mx-auto w-20 h-20 bg-white rounded-full mb-5"></div>
+      <div className="PhotoAFaire mx-auto w-14 h-14 bg-white rounded-full mb-5"></div>
       <div className="userInformation flex flex-col mx-auto text-center">
         <p>
           {userInfo.firstName} {userInfo.lastName}

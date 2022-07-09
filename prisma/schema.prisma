@@ -11,23 +11,25 @@ datasource db {
 }
 
 model User {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  authId       String     @unique
-  email        String     @unique
-  firstName    String
-  lastName     String
-  birthday     String
-  birthplace   String
-  pendingToken String[]
-  role         Role       @default(SALLE)
-  statut       Statut     @default(USER)
+  id               String                 @id @default(auto()) @map("_id") @db.ObjectId
+  authId           String                 @unique
+  email            String                 @unique
+  firstName        String
+  lastName         String
+  birthday         String
+  birthplace       String
+  picture          String
+  personnalAddress String
+  pendingToken     PendingUserToMission[]
+  role             Role                   @default(SALLE)
+  statut           Statut                 @default(USER)
   //mission relation many to many a faire plusieur user on la meme mission et vice verca
-  missionIDs   String[]   @db.ObjectId
-  missions     Missions[] @relation(fields: [missionIDs], references: [id])
+  missionIDs       String[]               @db.ObjectId
+  missions         Missions[]             @relation(fields: [missionIDs], references: [id])
   //contract relation one to many a faire user a plusieur contrat
-  workedTime   Int        @default(0)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  workedTime       Int                    @default(0)
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
 
 }
 
@@ -45,9 +47,11 @@ model Missions {
   lng         Float
 }
 
+//one to many user => pendingusertomission
 model PendingUserToMission {
-  //mettre token en ID
-  token       String   @id @map("_id")
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  token       String   @unique
+  user        User     @relation(fields: [userMail], references: [email])
   userMail    String
   missionId   String
   createdAt   DateTime @default(now())
@@ -55,6 +59,8 @@ model PendingUserToMission {
   place       String
   beginAt     DateTime
 }
+
+//TODO one to many user => contract
 
 enum Role {
   SALLE

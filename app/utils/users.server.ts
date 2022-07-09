@@ -63,6 +63,8 @@ export const getUserInformation = async (id: string) => {
     const userInfo = await prisma.user.findUnique({
       where: { id },
       select: {
+        picture: true,
+        personnalAddress: true,
         id: true,
         birthplace: true,
         birthday: true,

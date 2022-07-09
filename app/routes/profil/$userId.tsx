@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import { useUser } from "@clerk/remix";
 import type { Missions } from "@prisma/client";
 import { Statut } from "@prisma/client";
 import { Role } from "@prisma/client";
@@ -154,6 +155,7 @@ export default function userUpdate() {
       return false;
     }
   };
+
   return (
     <div className="w-full">
       <div className="w-3/4 mx-auto bg-orange-200 p-5 mt-5">
@@ -161,7 +163,9 @@ export default function userUpdate() {
           Information de: {user.firstName} {user.lastName}
         </h2>
         {/* TODO photo à récup de clerk */}
-        <div className="PhotoAFaire mx-auto w-32 h-32 bg-white rounded-full mb-5"></div>
+        <div className="PhotoAFaire mx-auto w-32 h-32 bg-white rounded-full mb-5">
+          <img src="" alt="" />
+        </div>
         {data?.error ? <p>{data?.error} </p> : null}
         <div className="flex">
           <div className="w-1/2">
