@@ -53,6 +53,7 @@ export const userIsNew = async (request) => {
 
   if (!userIsNew) {
     return true;
+    //throw redirect("/first-connexion");
   }
 
   return false;

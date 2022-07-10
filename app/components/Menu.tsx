@@ -8,13 +8,17 @@ import {
   UserButton,
 } from "@clerk/remix";
 import type { Statut } from "@prisma/client";
-import { Link, useLoaderData } from "@remix-run/react";
+import { LoaderFunction, redirect } from "@remix-run/node";
+import { Link, useLoaderData, useParams } from "@remix-run/react";
+import { userIsNew } from "~/utils/newAuth.server";
 type LoaderData = {
   userStatut: Statut | null;
   userId: string;
+  isNew: boolean;
 };
+
 const Menu = () => {
-  const { userId, userStatut } = useLoaderData<LoaderData>();
+  const { userId, userStatut, isNew } = useLoaderData<LoaderData>();
   const { signOut } = useClerk();
 
   if (!userStatut) return null;

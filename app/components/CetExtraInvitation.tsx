@@ -110,13 +110,15 @@ const Users = ({ selectedUser, setSelectedUser }: userPropsType) => {
     }
   };
   return (
-    <ul className="grid grid-cols-6 grid-rows-2 gap-2 h-96 m-auto overflow-auto bg-neutral-400">
+    <ul className="grid grid-cols-6 gap-2 h-96 m-auto overflow-auto bg-neutral-400">
       {userList.map((user) => {
         const selected = selectedUser.includes(user.email);
 
         return (
           <div
-            className={"h-44 pt-2 max-w-[105px] " + (selected && " bg-white")}
+            className={
+              "h-44 pt-2 mx-auto max-w-[105px] " + (selected && " bg-white")
+            }
             key={user.id}
           >
             <input

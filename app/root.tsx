@@ -11,13 +11,14 @@ import {
   ScrollRestoration,
   useCatch,
   useLoaderData,
+  useParams,
 } from "@remix-run/react";
 import ErrorComponent from "./components/ErrorComponent";
 import Footer from "./components/Footer";
 import Menu from "./components/Menu";
 import styles from "./styles/app.css";
 import directStyle from "./styles/style.css";
-import { getCurrentUser } from "./utils/newAuth.server";
+import { getCurrentUser, userIsNew } from "./utils/newAuth.server";
 
 export function links() {
   return [
@@ -38,7 +39,8 @@ export const loader: LoaderFunction = (args) => {
       const { userId } = request.auth;
       let userStatut = null;
       if (userId) userStatut = (await getCurrentUser(request))?.statut;
-
+      const isNew = await userIsNew(request);
+      if (isNew) return redirect("/first-connexion");
       return {
         userId,
         userStatut,
@@ -68,9 +70,11 @@ const Boundary = () => {
 export const CatchBoundary = ClerkCatchBoundary(Boundary); /* 2 */
 type LoaderData = {
   userId: string;
+  isNew: boolean;
 };
 function App() {
-  const { userId } = useLoaderData<LoaderData>();
+  const { userId, isNew } = useLoaderData<LoaderData>();
+
   return (
     <html lang="en">
       <head>

@@ -36,12 +36,10 @@ export const loader: LoaderFunction = async ({ request }) => {
 const usersList = () => {
   return (
     <div className="flex flex-col justify-center items-center w-full">
-      <div className="">
-        <h1 className="text-3xl text-center my-4">Liste des utilisateurs</h1>
+      <h1 className="text-3xl text-center my-4">Liste des utilisateurs</h1>
 
-        <div className="w-full py-3 mx-auto bg-orange-200 overflow-auto">
-          <UserList />
-        </div>
+      <div className="w-3/4 py-3 mx-auto bg-orange-200 overflow-auto">
+        <UserList />
       </div>
     </div>
   );
