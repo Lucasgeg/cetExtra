@@ -3,6 +3,8 @@ import UserCard from "./UserCard";
 
 const UserList = () => {
   const { userList } = useLoaderData();
+  console.log(userList);
+
   return (
     <ul className="grid grid-cols-1 md:grid-cols-9 gap-2 auto-rows-auto p-1">
       {/* TODO: choix par role/workedtime etc... */}

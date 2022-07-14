@@ -88,14 +88,12 @@ export const action: ActionFunction = async ({ request }) => {
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const consultingUser = await getCurrentUser(request);
+  const userId = params.userId;
   const userStatut = consultingUser.statut;
   if (!consultingUser || userStatut == "USER") return redirect("/");
   if (!consultingUser.id) return json({ error: "No user Information here" });
-  const userInfo = await getUserInformation(consultingUser.id);
-  console.log(userInfo);
-
-  const userFutureMission = (await userMissions(consultingUser.id))
-    .futureMisions;
+  const userInfo = await getUserInformation(userId);
+  const userFutureMission = (await userMissions(userId)).futureMisions;
   return json({
     user: userInfo,
     consultingUser,
