@@ -39,6 +39,7 @@ export const loader: LoaderFunction = (args) => {
       const { userId } = request.auth;
       let userStatut = null;
       if (userId) userStatut = (await getCurrentUser(request))?.statut;
+      console.log(userStatut);
 
       return {
         userId,
