@@ -1,18 +1,6 @@
-import { User } from "@prisma/client";
-import { Form, Link, useLoaderData } from "@remix-run/react";
-
-type UserCardProps = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: number;
-  statut: number;
-  workedTime: number;
-};
+import type { User } from "@prisma/client";
 
 const UserCard = (userInfo: User) => {
-  //SELECT SERVEUR // CUISINE
   return (
     <div
       className="userCard w-fit rounded-md flex flex-col p-2 mx-auto h-40"

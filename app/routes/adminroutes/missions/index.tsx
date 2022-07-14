@@ -30,12 +30,6 @@ const index = () => {
       >
         Créer Mission
       </Link>
-      <Link
-        to={"/adminroutes/missions/pendingextra"}
-        className="createMission flex justify-center items-center m-auto w-1/5 h-16 bg-orange-200 rounded-lg cursor-pointer"
-      >
-        cetExtra en attente
-      </Link>
 
       <Link
         to={"/adminroutes/missions/missionList"}
@@ -48,6 +42,12 @@ const index = () => {
         className="invitExtra flex justify-center items-center m-auto w-1/5 h-16 bg-orange-200 rounded-lg cursor-pointer"
       >
         Inviter cetExtra
+      </Link>
+      <Link
+        to={"/adminroutes/missions/pendingextra"}
+        className="createMission flex justify-center items-center m-auto w-1/5 h-16 bg-orange-200 rounded-lg cursor-pointer"
+      >
+        cetExtra en attente
       </Link>
     </div>
   );

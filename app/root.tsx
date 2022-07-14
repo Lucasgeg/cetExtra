@@ -39,8 +39,7 @@ export const loader: LoaderFunction = (args) => {
       const { userId } = request.auth;
       let userStatut = null;
       if (userId) userStatut = (await getCurrentUser(request))?.statut;
-      const isNew = await userIsNew(request);
-      if (isNew) return redirect("/first-connexion");
+
       return {
         userId,
         userStatut,

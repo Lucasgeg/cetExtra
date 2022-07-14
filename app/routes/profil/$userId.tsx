@@ -92,6 +92,8 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   if (!consultingUser || userStatut == "USER") return redirect("/");
   if (!consultingUser.id) return json({ error: "No user Information here" });
   const userInfo = await getUserInformation(consultingUser.id);
+  console.log(userInfo);
+
   const userFutureMission = (await userMissions(consultingUser.id))
     .futureMisions;
   return json({
@@ -103,7 +105,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 };
 
 export default function userUpdate() {
-  //TODO tableau liste des prochaines missions
+  console.log("toto"); //TODO tableau liste des prochaines missions
   const data = useActionData();
   const { user, userFutureMission } = useLoaderData<LoaderData>();
   const handleModify = () => {
