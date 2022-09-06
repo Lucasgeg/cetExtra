@@ -333,9 +333,9 @@ export const userPendingInvitation = async (userMail: string) => {
   return pendingInvitation;
 };
 
-export const connectToMission = async (user: string, mission: string) => {
+export const connectToMission = async (userMail: string, mission: string) => {
   const userToConnect = await prisma.user.findUnique({
-    where: { email: user },
+    where: { email: userMail },
   });
   const missionToConnect = await prisma.missions.findUnique({
     where: { id: mission },
@@ -345,7 +345,7 @@ export const connectToMission = async (user: string, mission: string) => {
     return json({ error: "Selected items are not valid" });
 
   const connect = await prisma.user.update({
-    where: { email: user },
+    where: { email: userMail },
     data: { missions: { connect: { id: mission } } },
   });
   if (!connect)

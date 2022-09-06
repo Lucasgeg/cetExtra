@@ -35,10 +35,7 @@ export const action: ActionFunction = async ({ request }) => {
         missionId
       );
       if (userAllreadyOnMission) return errorName.push(userAllreadyOnMission);
-      /* if (userIsOnTheMission(userMail.toString(), missionId))
-      return json({
-        errorUserOnMission: true,
-      }); */
+
       return await sendPendingUserToMission(userMail, missionId);
     })
   );

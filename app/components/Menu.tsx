@@ -14,11 +14,10 @@ import { userIsNew } from "~/utils/newAuth.server";
 type LoaderData = {
   userStatut: Statut | null;
   userId: string;
-  isNew: boolean;
 };
 
 const Menu = () => {
-  const { userId, userStatut, isNew } = useLoaderData<LoaderData>();
+  const { userId, userStatut } = useLoaderData<LoaderData>();
   const { signOut } = useClerk();
 
   if (!userStatut) return null;
@@ -82,7 +81,7 @@ const Menu = () => {
             <div className="m-auto">Contact</div>
           </Link>
           <Link
-            to={`/userUpdate/${userId}`}
+            to={`/profil`}
             className="w-28 h-14 flex bg-orange-200 rounded-lg"
           >
             <div className="m-auto">Profil</div>
